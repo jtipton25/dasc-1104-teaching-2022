@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+lectures/unit_4_R_12_Data_types_and_objects_cache/
+lectures/unit_4_R_12_Data_types_and_objects_files/
+lectures/unit_4_R_13_Functional_programming_cache/
+lectures/unit_4_R_13_Functional_programming_files/
+lectures/figs/
+
+results/

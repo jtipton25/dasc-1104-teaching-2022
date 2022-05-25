@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro to R and Rmarkdown</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="John Tipton" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro to R and Rmarkdown
+### John Tipton
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+&lt;/style&gt;
+
+
+
+
+# Readings
+
+* R for data science 
+    * Introduction
+    * Chapters 2 (Workflow: basics), 4 (Workflow: scripts), 6 (Workflow: projects), 21 (R Markdown), and 24 (R Markdown workflow)
+
+---
+
+# Introduction to RStudio
+
+* For more examples and information, see [Programming with R](http://swcarpentry.github.io/r-novice-inflammation/) and [R for Reproducible Scientific Analyses](http://swcarpentry.github.io/r-novice-gapminder/).
+
+
+Locate the different panels within RStudio: 
+
+![](./img/Rstudio.png)
+---
+
+# Creating a new RMarkdown file
+
+Let's start by creating a new RMarkdown file:
+
+- In the menu bar click **File `\(\Rightarrow\)` New File `\(\Rightarrow\)` R Markdown**
+
+--
+
+- Choose the type of file, the output format, the title and the author and click OK.
+    - In this class, we will almost always use a **pdf** format
+    - **html** formats often look really slick
+
+---
+
+# Creating a new RMarkdown file
+
+The RMarkdown file will be created with some default text. Let's run through it and see what it does.
+
+![](./img/default-RMarkdown.png)
+
+
+---
+
+# Working in RMarkdown
+
+We can include plain text in RMarkdown by typing and can add `R` code by using the three tick marks and curly brace notation shown below. Any `R` code in the brackets will be run.
+
+````
+```{r}
+
+```
+````
+
+---
+
+# Using R code in RMarkdown
+
+For example, we can add two numbers, and the result will be printed below. 
+
+```r
+# add two numbers
+4+9
+```
+
+```
+## [1] 13
+```
+
+Notice how the output is preceded by a #. The # represents a comment in R. Everything that is written on the same line as a comment after the comment is not executed. **Use comments everywhere! Your best collaborator/teammate is yourself from 6 months ago!**
+
+.center[
+![success](https://media1.giphy.com/media/xNBcChLQt7s9a/giphy.gif)
+]
+
+
+---
+
+# Comment your code!
+
+
+```r
+# demonstrate comments
+5+7 # +8/9
+```
+
+```
+## [1] 12
+```
+
+- Note: I use two ## for comments (any number of ###s produces a comment until the end of the line)
+---
+
+# Variable assignment
+
+We can assign variables to a value using the assign operator `&lt;-`. Below we define the variable `value` as 5 and print the output.
+
+
+```r
+## assign values
+value &lt;- 5
+print(value)
+```
+
+```
+## [1] 5
+```
+
+- Note: The equals symbol also works 
+
+
+```r
+## assign values
+value = 5
+print(value)
+```
+
+```
+## [1] 5
+```
+
+- There are **sometimes** cases where there is a difference but most times there is not a difference.
+
+---
+
+# Using R
+
+We can perform calculations on the variable `value`. We multiply `value` by 5 and save the output in the variable `output`.
+
+
+```r
+## assign values that are a result of an operation
+output &lt;- value * 5
+print(output)
+```
+
+```
+## [1] 25
+```
+
+and check that the output is the same as just multiplying by 5
+
+
+```r
+print(value*5)
+```
+
+```
+## [1] 25
+```
+
+---
+
+# Try on your own:
+
+- Create a new Rmarkdown document and give it the title "My first Rmarkdown Document"
+
+- Write the line "To be or not to be, that is the question." in plain text in your RMarkdown. 
+
+- After this line, create an `R` chunk and assign the variable `b` the value of 7. Then print the value of 2b.
+
+- Add in a comment of your favorite Shakespeare quote (or any quote if you don't like Shakespeare).
+
+- Compile the document and check that your answer looks like mine.
+
+**Insert document created in class here**
+
+
+
+---
+
+# Updating/changing variables
+
+We can also update the variable `value` in the code
+
+```r
+value &lt;- 11
+print(value)
+```
+
+```
+## [1] 11
+```
+
+```r
+value &lt;- value - 8
+print(value)
+```
+
+```
+## [1] 3
+```
+
+---
+
+# Functions
+
+We can also use functions. Almost all of the common mathematical functions are available. For example
+
+```r
+y &lt;- log(10)
+print(y)
+```
+
+```
+## [1] 2.302585
+```
+
+```r
+z &lt;- sin(4 * pi) / cos(sqrt(3 * pi))
+print(z)
+```
+
+```
+## [1] 4.911175e-16
+```
+
+```r
+print(y+z)
+```
+
+```
+## [1] 2.302585
+```
+
+---
+
+# Functions
+
+We can also use more complex functions and statistical functions. We will make more use of this throughout the course.
+
+
+```r
+hist(rnorm(100))
+```
+
+&lt;img src="unit_4_R_09_intro_R_Rmarkdown_files/figure-html/unnamed-chunk-11-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Equalities/Inequalities
+
+We can check if two values are equal using `==`
+
+```r
+7 == 6
+```
+
+```
+## [1] FALSE
+```
+
+```r
+(6/3) == 2
+```
+
+```
+## [1] TRUE
+```
+
+or, a safer way that avoids numerical overflow:
+
+
+```r
+2.0000000001 == 2
+```
+
+```
+## [1] FALSE
+```
+
+```r
+all.equal(2.0000000001, 2)
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+# Underflow
+
+What is underflow? Underflow results from the computer using floating point arithmetic that only approximates the math. For example, `\(\pi\)` has an infinitely long number of digits, but only has about 22 digits in `R`. 
+
+
+
+```r
+options(digits=22) 
+pi
+```
+
+```
+## [1] 3.141592653589793115998
+```
+
+The `all.equal` command asks are these two values equal with respect to the rounding that a computer does.
+
+* [Youtube: Subtracting through addition](https://www.youtube.com/watch?v=PS5p9caXS4U)
+
+---
+
+# Testing Inequalities
+
+We can test if a variable is less than some value, greater than some value, or any other inequality.
+
+
+```r
+value &lt;- 6
+value &lt; 4
+```
+
+```
+## [1] FALSE
+```
+
+```r
+value &gt; 6
+```
+
+```
+## [1] FALSE
+```
+
+```r
+value &gt;= 6
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+# Conditional Logic
+
+We can use these tests to write conditional statements (if-else)
+
+
+```r
+value &lt;- 6
+if (value &lt; 6) {
+  print("less than 6")
+} else if (value &gt; 6) {
+  print("greater than 6")
+} else if (all.equal(value, 6)) {
+  print("equals 6")
+}
+```
+
+```
+## [1] "equals 6"
+```
+
+---
+
+# Conditional Logic
+
+
+```r
+value &lt;- 8
+if (value &lt; 6) {
+  print("less than 6")
+} else if (value &gt; 6) {
+  print("greater than 6")
+} else if (all.equal(value, 6)) {
+  print("equals 6")
+}
+```
+
+```
+## [1] "greater than 6"
+```
+
+---
+
+# Tips and tricks
+
+- Order of operations matters. Use parantheses to make things clear
+
+
+```r
+3 + 5 * 6
+```
+
+```
+## [1] 33
+```
+
+```r
+(3 + 5) * 6
+```
+
+```
+## [1] 48
+```
+
+```r
+3 + (5 * 6)
+```
+
+```
+## [1] 33
+```
+
+---
+
+# Tips and tricks
+
+- If you run a command that takes a long time or was wrong, you can cancel commands with `Esc` or `Ctrl+C`.
+
+- The `ls()` command will list all of the variables and functions in the `R` environment.
+
+- **Packages** use `install.packages("package name here")` to install packages
+
+
+* If you get an error message "there is no package named tidyverse", you need to install and load the package.
+
+    * You only need to install once per computer.
+    
+    * You need to load the library every time you work with the code.
+
+
+
+```r
+install.packages("tidyverse")  ## do this one time 
+```
+
+.small[
+
+```
+## ── Attaching packages ─────────────────────────────────── tidyverse 1.3.1 ──
+```
+
+```
+## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.1.1     ✓ dplyr   1.0.5
+## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1
+```
+
+```
+## ── Conflicts ────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+]
+
+---
+
+# In Class Problems
+
+1. What will be the value of each variable after each statement below:
+
+
+```r
+mass &lt;- 47.5
+age &lt;- 122
+mass &lt;- mass * 2.3
+age &lt;- age - 20
+```
+
+2. After running the code above, does `mass` equal `age`.
+
+3. After running the code above, compare `mass` to `age`. Which is larger?
+
+4. Install the following packages using `install.packages()`: `ggplot2` and `dplyr`
+
+
+---
+
+# Project-based analysis
+
+* Use git.
+
+* Have a consistent file structure and naming convention.
+
+* Focus on reproduciblity and portability.
+
+---
+
+# RStudio Projects
+Have you ever had a set of files that looked like this
+
+![](./img/projects.png)
+
+---
+
+.center[
+![conspiracy](https://media0.giphy.com/media/l0IylOPCNkiqOgMyA/giphy.gif)  
+]
+
+---
+
+# RStudio Projects
+
+- It's hard to keep track of what the current version of the file is, what the current data are, what changes you made to the files, etc. It also makes it **really hard to go back to your work weeks, months, or even years later**.
+
+- Instead, we can use **Projects** to organize our analyses. 
+
+---
+
+# Why use projects?
+- It makes it easier to share your results
+    - Example: you need to convince your boss that your results are meaningful
+
+- Reproducing the analysis on new dataset is easier
+    - Example: you are a financial trader and want to analyze 10 different stocks
+
+- Resuming the project is easier after a break
+   - You can switch back and forth between high-priority projects
+   - You can take longer, more relaxing vacations 
+   
+---
+
+# Creating a new RStudio Project
+
+Let's create a new RMarkdown Project:
+
+- In the menu bar click
+**File `\(\Rightarrow\)` New Project `\(\Rightarrow\)` Existing Directory `\(\Rightarrow\)` Current folder for class**
+
+- Name your project
+- Choose the project location -- add the project to your current gitLab folder
+- Click create project
+
+
+---
+
+
+# Project organization
+Often you want to organize your project into folders. A common set of folders includes
+
+- put your script files in the `R` folder
+- put your reports in the `docs` folder
+- put your data files in the `data` folder
+- put your processed data in the `results` folder
+
+---
+
+# Best practices
+
+- Keep each project in its own folder (i.e. DASC1104)
+
+- **NEVER EVER modify an Excel/data file by hand**
+   - load the file into R, modify the data in R, then write an output 
+file in the `results` folder
+   - Never have to worry about "which dataset was this"
+   - Data is time-consuming and costly to collect. 
+   - Changing data in Excel leaves no record so you never know which data was the "original" or what changes were made
+   - I write a script for processing data usually called `load-data.R` and use the `source` command to run the script.
+   
+   
+---
+
+# Best practices
+
+- Treat any code **output** as disposable
+   - With an `RMarkdown` document, `R` scripts, and `.py` scripts, you can always re-create the analysis
+
+- Treat the **raw data** as sacred 
+
+- If you write the same bit of code more than 3 times, figure out how to write a function
+   - If you work on many projects, you might find yourself repeating tasks
+   - One function reduces the chance of mistakes from typos or &gt; copy/paste errors
+  - Put functions in their own `.R` or `.py` files
+  
+  
+---
+
+
+# Best practices 
+
+* Save your data in the `data` directory
+* Learn to Google for help and read the help files using the `?` before a function.
+    * `?lm` will get you the help page for the `lm` function for linear regression.
+    * Google [linear regression in R](https://www.google.com/search?q=linear+regression+in+r&amp;rlz=1C5CHFA_enUS753US753&amp;oq=linear+regression+in+R&amp;aqs=chrome.0.0l6.4927j0j7&amp;sourceid=chrome&amp;ie=UTF-8) for help on linear regression
+    
+
+---
+
+
+# Working directories in R
+
+- A `filepath` is the **address** of where a file is located.
+   - On a Windows machine this might look like `C:\Documents\DASC1104` 
+   - On a Mac it might look like `~/Documents/DASC1104`
+
+- The **working directory** is the default filepath in R.
+   - To find your working directory use the command `getwd()`.
+
+
+```r
+getwd()
+```
+
+```
+## [1] "/Users/tips/dasc-1104-teaching/lectures"
+```
+
+---
+
+
+# Working Directories and Projects
+
+- If you use a project, the working directory starts in the project folder. 
+   - On a Windows (Mac) machine with a project in the folder `:\Documents\DASC1104` (`~/Documents/DASC1104`), `getwd()` will return that file path.
+   - If we follow the advice above about projects, we can get access to the `R` script at `C:\Documents\DASC1104\R\add-two-numbers.R` (`~/Documents/DASC1104/R/add-two-numbers.R`), by using the command `source(here("R", "add-two-numbers"))`.
+
+- The `here` command from `library(here)` automatically constructs the filepath using the project then finds the file `add-two-numbers.R` in the `/R/` folder.
+
+
+---
+
+
+# Working Directories and Projects
+
+Try this in your project now.
+
+
+```r
+library(here)
+## source tells R to load/run the file 
+source(here::here("R", "add-two-numbers.R"))
+
+add_two_numbers(5, 7)
+```
+
+```
+## [1] 12
+```
+
+---
+
+
+# Object types in `R` 
+
+## data types
+
+
+* character (string)
+
+```r
+name &lt;- "Cora"
+```
+
+* numeric (like double/float in strongly typed languages)
+
+```r
+age &lt;- 2
+```
+
+* integer
+
+```r
+fingers &lt;- 10L
+```
+
+* complex
+
+```r
+spectrum &lt;- 2 + 5i
+```
+
+* logical
+
+```r
+success &lt;- TRUE
+```
+
+---
+
+# Object types in `R` 
+
+## data structures
+
+* scalars
+
+```r
+a &lt;- 4
+```
+
+* vectors
+
+```r
+x &lt;- c(2, 3, 4.5)
+```
+
+* matrices
+
+```r
+y &lt;- matrix(rnorm(6), nrow = 3, ncol = 2)
+```
+
+* arrays
+
+```r
+z &lt;- array(rnorm(60), dim = c(4, 3, 5))
+```
+
+---
+
+# Object types in `R` 
+
+## data structures
+
+* lists
+
+
+```r
+nba_player &lt;- list(
+  name = "Lebron James",
+  height = 81,
+  weight = 250,
+  nicknames = c("King James", "LBJ", "Bron-Bron")
+)
+```
+
+* data.frames
+
+
+```r
+dat &lt;- data.frame(x = 1:10, y = rnorm(10), z = rep(c("a", "b"), each = 5))
+```
+
+* tibbles
+
+
+```r
+library(tidyverse)
+dat_tibble &lt;- tibble(dat)
+```
+
+---
+
+# Object types in `R` 
+
+## data structures
+
+* factors
+
+
+```r
+religion &lt;- factor(c("catholicism", "judaism", "islam", "hinduism"))
+quality &lt;- factor(c("low", "medium", "high"), levels = c("low", "medium", "high"), ordered = TRUE)
+```
+
+---
+    
+# Object types in `R` 
+
+## object attributes
+
+* names
+
+
+```r
+names(nba_player)
+```
+
+```
+## [1] "name"      "height"    "weight"    "nicknames"
+```
+
+
+
+```r
+ores &lt;- matrix(
+  rnorm(20),
+  nrow = 5, 
+  ncol = 4,
+  dimnames = list(
+    location = paste("site", 1:5),
+    variable = c("lead", "zinc", "copper", "tin")
+  )
+)
+```
+
+
+---
+    
+# Object types in `R` 
+
+## object attributes
+
+* dimension
+
+.very-small[
+
+```r
+dim(ores)
+```
+
+```
+## [1] 5 4
+```
+
+
+```r
+nrow(ores)
+```
+
+```
+## [1] 5
+```
+
+
+```r
+ncol(ores)
+```
+
+```
+## [1] 4
+```
+
+
+```r
+length(ores)
+```
+
+```
+## [1] 20
+```
+
+
+```r
+length(nba_player)
+```
+
+```
+## [1] 4
+```
+]
+
+
+---
+
+# Object types in `R` 
+
+## object attributes
+
+.very-small[
+* class
+
+
+```r
+class(ores)
+```
+
+```
+## [1] "matrix" "array"
+```
+
+
+```r
+class(nba_player)
+```
+
+```
+## [1] "list"
+```
+
+
+```r
+class(dat_tibble)
+```
+
+```
+## [1] "tbl_df"     "tbl"        "data.frame"
+```
+      
+* inheritance
+
+    * e.g., animal class
+    
+    * a cat is an animal -&gt; the cat class inherits the animal class
+    
+    * a lion is a cat and an animal -&gt; the lion class inherits the cat and animal classes
+]        
+
+---
+
+
+# Vector/Matrix operations
+
+R is a very powerful for mathematical functions. One of the great benefits of `R` is the ability to easily apply functions to vectors, matrices, or even larger objects.
+
+`$$\begin{align*}
+4 \begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix}  &amp; =
+\begin{pmatrix} 4 \\ 8 \\ 12 \end{pmatrix}
+\end{align*}$$`
+
+`$$\begin{align*}
+\begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix} + 
+\begin{pmatrix} 4 \\ 5 \\ 6 \end{pmatrix} &amp; =
+\begin{pmatrix} 5 \\ 7 \\ 9 \end{pmatrix}
+\end{align*}$$`
+
+
+---
+
+# Vectors
+
+For instance, we can define a vector using the function `c()` and perform mathematical operations
+
+
+```r
+vec &lt;- c(4, 5, 6)
+vec / 2
+```
+
+```
+## [1] 2.0 2.5 3.0
+```
+
+```r
+vec2 &lt;- c(10, 9, 6)
+vec + vec2
+```
+
+```
+## [1] 14 14 12
+```
+
+```r
+vec / vec2
+```
+
+```
+## [1] 0.4000000000000000222045 0.5555555555555555802272
+## [3] 1.0000000000000000000000
+```
+
+
+---
+
+# Matrices
+
+We can also create matrices
+
+
+```r
+A &lt;- matrix(1:4, 2, 2)
+A
+```
+
+```
+##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+```
+
+```r
+B &lt;- matrix(6:11, 2, 3)
+B
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    6    8   10
+## [2,]    7    9   11
+```
+
+---
+
+# Matrices
+
+And do math with matrices
+
+`$$\begin{align*}
+\begin{pmatrix} 1 &amp; 2 &amp; 3 \\ 3 &amp; 2 &amp; 1 \\ 1 &amp; 2 &amp; 3 \end{pmatrix} + \begin{pmatrix} 4 &amp; 5 &amp; 6 \\ 7 &amp; 8 &amp; 9 \\ 10 &amp; 11 &amp; 12 \end{pmatrix}  &amp; =
+\begin{pmatrix} 5 &amp; 7 &amp; 9 \\ 10 &amp; 10 &amp; 10 \\ 11 &amp; 13 &amp; 15 \end{pmatrix}  
+\end{align*}$$`
+
+
+```r
+A &lt;- matrix(c(1, 3, 1, 2, 2, 2, 3, 1, 3), 3, 3)
+B &lt;- matrix(c(4, 7, 10, 5, 8, 11, 6, 9, 12), 3, 3)
+
+A + B
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    5    7    9
+## [2,]   10   10   10
+## [3,]   11   13   15
+```
+
+---
+
+# Matrices
+
+We can multiply matrices
+
+`$$\begin{align*}
+\begin{pmatrix} 1 &amp; 3 \\ 2 &amp; 4 \end{pmatrix} \times \begin{pmatrix} 6 &amp; 8 &amp; 10 \\ 7 &amp; 9 &amp; 11 \end{pmatrix} &amp; =
+\begin{pmatrix} 27 &amp; 35 &amp; 43 \\ 40 &amp; 52 &amp; 64 \end{pmatrix}  
+\end{align*}$$`
+
+
+```r
+A &lt;- matrix(1:4, 2, 2)
+B &lt;- matrix(6:11, 2, 3)
+## matrix multiplication
+A %*% B
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]   27   35   43
+## [2,]   40   52   64
+```
+
+---
+
+# Matrices
+
+Or select rows or columns of a matrix (order is rows first, column second)
+
+- First row of
+
+`$$\begin{align*}
+\begin{pmatrix} 1 &amp; 3 \\ 2 &amp; 4 \end{pmatrix}
+\end{align*}$$`
+
+is 
+
+`$$\begin{align*}
+\begin{pmatrix} 1 &amp; 3 \end{pmatrix}
+\end{align*}$$`
+
+
+
+```r
+## select the first row of A
+A[1, ]
+```
+
+```
+## [1] 1 3
+```
+
+
+---
+
+# Matrices
+- Third column of
+
+`$$\begin{align*}
+\begin{pmatrix} 6 &amp; 8 &amp; 10 \\ 7 &amp; 9 &amp; 11 \end{pmatrix}
+\end{align*}$$`
+
+is 
+
+`$$\begin{align*}
+\begin{pmatrix} 10 \\ 11 \end{pmatrix}
+\end{align*}$$`
+
+
+```r
+## select the third column of B
+B[, 3]
+```
+
+```
+## [1] 10 11
+```
+
+
+---
+
+# For loops
+
+- For loops are a powerful programming techniques. 
+
+- For loops allow you to repeat the same procedure repeatedly over different values.
+
+---
+
+# For loops
+
+- Let's try a simple example that prints the numbers from 1 to 6
+
+
+```r
+## The a:b function creates a vector of integers starting 
+## at a and ending at b
+1:6
+```
+
+```
+## [1] 1 2 3 4 5 6
+```
+
+```r
+## loop over the variable i taking the values 1 to 6
+for (i in 1:6) {  
+  print(i)
+}
+```
+
+```
+## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+## [1] 6
+```
+
+---
+
+# For loops
+
+We could also print out a set of names one by one
+
+
+```r
+names &lt;- c("John", "Paul", "Ringo", "George")
+
+## loop over the variable i taking the values in names
+for (i in names) {  
+  print(i)
+}
+```
+
+```
+## [1] "John"
+## [1] "Paul"
+## [1] "Ringo"
+## [1] "George"
+```
+
+---
+
+# For loops
+
+- We can do mathematical procedures like calculate the cumulative sum of numbers from 1 to 100
+
+
+```r
+## define the variable out as a vector of 100 zeros
+
+## rep(a, N) is a function that creates a vector
+## of length N where each element is a
+out &lt;- rep(0, 100)
+# print(out)
+```
+
+---
+
+# For loops
+
+
+```r
+out[1] &lt;- 1
+## loop over the variable i taking the values 2 to 100
+for (i in 2:100) {  
+  ## take the value of the variable 
+  ## out at the i-1 position, add i, 
+  ## and save at the ith position of out
+  out[i] &lt;- out[i-1] + i    
+}
+# print(out)
+## use the cumsum function
+# cumsum(1:100)
+all.equal(out, cumsum(1:100))
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+# Functions 
+- Functions are an important tool. 
+
+- Every time you need to do an operation multiple times, writing a function
+   - increases your long term efficiency (your time is the most important)  
+   - reduces the chance of errors (type the code once, less chance of typos).
+
+---
+
+# Functions
+
+- We can create our version of the function `cumsum` by writing the function `my_cumsum` based on the for loop we wrote above.
+
+
+```r
+my_cumsum &lt;- function(x) { ## x is the function argument
+  ## N is the length of x
+  N &lt;- length(x)
+  ## define a vector to store the output
+  out &lt;- rep(0, N)
+  ## set the first element of out as the first element of x
+  out[1] &lt;- x[1]
+  ## loop over the remaining N-1 values
+  for (i in 2:N) {
+    out[i] &lt;- out[i-1] + x[i]
+  }
+  ## return the value out
+  return(out)
+}
+```
+
+---
+
+# Functions
+
+We can test our function using some examples
+
+```r
+a &lt;- 5:13
+my_cumsum(a)
+```
+
+```
+## [1]  5 11 18 26 35 45 56 68 81
+```
+
+```r
+all.equal(my_cumsum(a), cumsum(a))
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+# Functions
+
+You can even call a function that calls a function that calls a function...
+
+
+```r
+my_cumsum(my_cumsum(my_cumsum(a)))
+```
+
+```
+## [1]    5   21   55  115  210  350  546  810 1155
+```
+
+```r
+cumsum(cumsum(cumsum(a)))
+```
+
+```
+## [1]    5   21   55  115  210  350  546  810 1155
+```
+
+
+```r
+# knitr::include_graphics(here::here("images", "top.gif"))
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

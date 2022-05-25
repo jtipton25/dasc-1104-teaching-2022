@@ -1,0 +1,85 @@
+---
+title: "How to modify your PATH"
+author: "Andrew Alverson and John Tipton"
+date: |
+    | Created: 9/12/2020
+    | Last modified: 9/12/2020
+output:
+  html_document:
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+## default options for compiling the Rmarkdown document
+knitr::opts_chunk$set(
+  echo      = TRUE, 
+  tidy      = TRUE, 
+  fig.align = "center",
+  out.width = "70%"
+)
+knitr::opts_chunk$set(package.startup.message = FALSE)
+# library(openintro)
+```
+
+---
+
+#### Background
+
+When you type a command (e.g., `ls`, `mkdir`, and `pwd`), you're asking the Shell to execute a program. In order to execute the program, the Shell needs to know where it's installed, then find and execute it. How does it know where to look? It looks in your PATH, which is just a list of directories that contain executable programs. It starts at the beginning of the list, checks whether the program is there, and if it's not, it keeps going down the list until it finds the location/directory containing the program you asked it to run. The command `which` behaves similarly. When you type `which pwd`, it goes through the list of directories in your PATH, then returns the **absolute path** specifying the location of that program. There's nothing too complicated here.
+
+You're going to start writing and executing your own code, so to make our lives as easy as possible, we want to do two things:
+
+- store all of our scripts or compiled executables in a single central location
+- ensure that we can execute those scripts or compiled executables from any working directory  
+
+The following short tutorial will walk you through accomplishing both of these tasks.
+
+---
+
+#### Create a central repository for all of your code
+
+You can put this directory anywhere you choose. Use the following commands to create it in your home directory:
+
+`cd $HOME`
+`mkdir scripts`
+
+---
+
+#### Add the scripts directory, or more specifically the _absolute path_ to our scripts directory, to your PATH
+
+Type the following command to see your current PATH: `echo $PATH`
+
+You'll see something like this:
+
+`/opt/python/3.7.7/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/aja/.local/bin:/home/aja/bin`
+
+This is just a list of items separated by colons, and each item is the absolute path to a directory where the Shell will look for executables. **Follow these instructions to add the `scripts` directory to your PATH:**
+
+`cd $HOME` to go to your home directory
+    
+`ls -al` to view all "hidden" system files in your home directory
+    
+`nano .bash_profile` to view a script that executes each time you start your Shell
+        
+- you can modify nearly all aspects of your environment here
+- find the line where your PATH is defined, it will look something like this:
+    
+`PATH=$PATH:$HOME/.local/bin:$HOME/bin`
+    
+- all we need to do is append our scripts directory to the end of the list; do this by typing it in `nano`
+    
+- your PATH should now look like this (new part is boldfaced) (note **$HOME/scripts** at the end; don't forget the colon!):
+    
+`PATH=$PATH:$HOME/.local/bin:$HOME/bin:$HOME/scripts`
+    
+- Save the file and exit `nano`
+    
+- type `echo $PATH` to view your PATH -- is your scripts directory there? No, it's not. Your `.bash_profile` file is a script that only gets executed, setting all your environment variables, when you start the Shell. But you can refresh it without exiting and relaunching the Shell by typing the following command:
+
+`source ~/.bash_profile`
+
+---      
+
+The command `echo $PATH` should now list your entire PATH, ending with `$HOME/scripts/`
+
+As long as your scripts have execute permssion, you will now be able to run them from any working directory.

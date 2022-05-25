@@ -1,0 +1,1227 @@
+---
+title: "File I/O and basic data wrangling"
+author: "John Tipton"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false      
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+urlcolor: blue
+knit: pagedown::chrome_print
+---
+
+```{css, echo = FALSE}
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+```
+
+
+```{r setup, include = FALSE, cache = FALSE, message = FALSE}
+## set some knitr options
+library(knitr)
+library(here)
+# ## Figure settings, defaults to png files
+opts_chunk$set(fig.align='center', fig.width = 16/4,
+               fig.height = 9/4, fig.show = 'hold', par = TRUE,
+               dev='png',
+               dpi=72*4, out.width = "80%")
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s'>%s</span>", color,
+      x)
+  } else x
+}
+
+hl <- function(x) {
+  colorize(x, color = "corals2")
+}
+```
+
+# Readings
+
+* R for data science 
+    * Introduction
+    * Chapters 3 (Data transformation with `dplyr`), 7 (Tibbles with `tibble`), 8 (Data import with `readr`), and 9 (Tidy data with `tidyr`)
+
+
+---
+
+# The `dplyr` package
+
+* The `dplyr` package can be loaded as part of the `tidyverse` library
+
+```{r, message = FALSE}
+library(tidyverse)
+```
+
+
+* Namespaces
+    
+    * Different modules might have the same name -- how does the computer know which function you meant?
+    
+    * In python, you can use the `mean()` function from the `statistics` module using `statistics.mean()`
+
+    * In `R`, namespaces are defined using `::`
+    
+    * `dplyr::filter()` uses the `filter()` function in the `dplyr()` library
+    
+---
+
+# `dplyr` functions
+
+* The big 5:
+
+    * Choose observations (rows) based on conditional values with `filter()`
+    
+    * Reorder the variables with `arrange()`
+    
+    * Select variables by name with `select()`
+    
+    * Create new variables with `mutate()`
+    
+    * Create summary variables with `summarize()` 
+        * `summarise()` if you are British
+        
+---
+
+# Logical operators
+
+* Test if A is greater than B `A > B` 
+
+--
+
+* Test if A is less than B `A < B` 
+
+--
+
+* Test if A is greater than or equal to B `A >= B` 
+
+--
+
+* Test if A is less than or equal to B `A <= B` 
+
+--
+
+* Test if A is equal to B `A == B`
+
+--
+
+* Test if A is not equal to B `A != B`
+
+--
+
+* Return TRUE if both A and B are TRUE `A & B`
+
+--
+
+* Return TRUE if A or B (or both) is TRUE `A | B`
+
+--
+
+* Return TRUE if A in B `A %in% B`
+
+---
+
+# Logical operators
+
+```{r, echo = FALSE, out.width = "100%", fig.align = "center"}
+knitr::include_graphics("./img/transform-logical.png")
+```
+
+---
+
+# Penguins
+
+.small[
+```{r}
+library(palmerpenguins)
+glimpse(penguins)
+```
+]        
+        
+---
+
+# Filter
+
+* Choose only the penguins from the island Torgersen  
+
+--
+
+```{r}
+penguins %>%
+  filter(island == "Torgersen")
+```
+
+
+---
+
+# Filter
+
+* Choose only the penguins that are species `Gentoo`
+
+--
+
+```{r}
+penguins %>%
+  filter(species == "Gentoo")
+```
+
+---
+
+# Filter
+
+* Choose only the penguins that are species `Chinstrap` and from the island `Biscoe`
+
+--
+
+```{r}
+penguins %>%
+  filter(species == "Chinstrap" & island == "Biscoe")
+```
+
+* How many observations?
+
+---
+
+# Filter
+
+* Choose only the penguins that are species `Chinstrap` or from the island `Biscoe`
+
+--
+
+```{r}
+penguins %>%
+  filter(species == "Chinstrap" | island == "Biscoe")
+```
+
+
+* How many observations?
+
+---
+
+# Filter
+
+* Choose only the penguins that are species `Gentoo` or not from the island `Torgersen`
+
+--
+
+```{r}
+penguins %>%
+  filter(species == "Gentoo" | island != "Torgersen")
+```
+
+---
+# Filter
+
+* Choose penguins that are from the islands of `Torgersen` or `Dream`
+
+--
+
+```{r}
+penguins %>%
+  filter(island %in% c("Torgersen", "Dream"))
+```
+
+---
+
+# Filter
+
+* Choose penguins that have `bill_length_mm` between 36 than 48 mm (inclusive)
+
+--
+
+```{r}
+penguins %>%
+  filter(bill_length_mm <= 48 & bill_length_mm>= 36)
+```
+
+
+---
+
+# Arrange 
+
+* Arrange the penguins based on `bill_length_mm` in increasing order
+
+--
+
+```{r}
+penguins %>%
+  arrange(bill_length_mm)
+```
+
+
+---
+
+# Arrange 
+
+* Arrange the penguins based on `bill_length_mm` in decreasing order
+
+--
+
+```{r}
+penguins %>%
+  arrange(desc(bill_length_mm))
+```
+
+---
+
+# Select
+
+* Select the 3rd through 5th variables
+
+--
+
+```{r}
+penguins %>%
+  select(3:5)
+```
+
+---
+
+# Select
+
+* Select the variables `sex`, `island`, and `body_mass_g`
+
+--
+
+```{r}
+penguins %>%
+  select(sex, island, body_mass_g)
+```
+
+
+---
+
+# Select
+
+* Select all the variables except for `flipper_length_mm`, and  `year`
+
+--
+
+```{r}
+penguins %>%
+  select(-flipper_length_mm, -year)
+```
+
+
+---
+
+# Select
+
+* Choose only variables starting with a string `starts_with()`
+
+--
+
+* Choose only variables ending with a string `ends_with()`
+
+--
+
+* Choose only variables containing a string `contains()`
+
+--
+
+* Choose only variables matching a regular expression `matches()`
+
+--
+
+* Choose only variables within a numeric range `num_range()`
+
+
+---
+
+# Select
+
+
+* Select all the variables ending with `mm` or beginning with `s`
+
+--
+
+```{r}
+penguins %>%
+  select(ends_with("mm") | starts_with("s"))
+```
+
+---
+
+# Mutate
+
+* Create a variable called `bill_area` that approximates bill surface area in mm (assume a rectangular bill) and select the three bill variables.
+
+--
+
+```{r}
+penguins %>%
+  mutate(bill_area = bill_length_mm * bill_depth_mm) %>%
+  select(starts_with("bill"))
+```
+
+---
+
+# Transmute
+
+* Keep only the created variable
+
+* Create a variable called `bill_area` that approximates bill surface area in mm (assume a rectangular bill) and select the three bill variables.
+
+--
+
+```{r}
+penguins %>%
+  transmute(bill_area = bill_length_mm * bill_depth_mm) 
+```
+
+---
+
+# Transmute
+
+* Keep only the created variable
+
+* Create a variable called `bill_area` that approximates bill surface area on a log scale (assume a rectangular bill) and select the three bill variables (Why would you do this? No one knows...)
+
+--
+
+```{r}
+penguins %>%
+  transmute(bill_area = log(bill_length_mm * bill_depth_mm))
+```
+
+---
+
+# Summarize
+
+* Calculate the average `bill_length_mm` and save as `mean_bill_length`
+
+--
+
+```{r}
+penguins %>%
+  summarize(mean_bill_length_mm = mean(bill_length_mm))
+```
+
+* What happened?
+
+
+```{r}
+penguins %>%
+  summarize(mean_bill_length_mm = mean(bill_length_mm, na.rm = TRUE))
+```
+
+* What does `na.rm = TRUE` do?
+
+
+---
+
+# Summarize
+
+* What is the average `body_mass_g` by species? 
+
+
+--
+.small[
+```{r}
+penguins %>%
+  group_by(species) %>%
+  summarize(mean_body_mass_by_species = mean(body_mass_g, na.rm = TRUE))
+```
+]
+
+--
+
+.small[
+```{r}
+penguins %>%
+  filter(!is.na(body_mass_g)) %>%
+  group_by(species) %>%
+  summarize(mean_body_mass_by_species = mean(body_mass_g))
+```
+]
+
+---
+
+# Summarize
+
+
+```{r}
+data("starwars")
+glimpse(starwars)
+```
+
+---
+
+# Summarize
+
+* Count using `n()`
+
+* Important to make sure you check the group sample size 
+
+```{r}
+starwars %>%
+  filter(!is.na(mass) & !is.na(films)) %>%
+  group_by(films) %>%
+  summarize(mean_body_mass_by_home = mean(mass),
+            count = n())
+```
+
+
+---
+
+# Summarize
+
+* pipe output into `ggplot`
+
+```{r, out.width = "70%"}
+starwars %>%
+  filter(!is.na(mass) & !is.na(films)) %>%
+  group_by(films) %>%
+  summarize(mean_body_mass_by_home = mean(mass),
+            count = n()) %>%
+  ggplot(aes(x = count, y = mean_body_mass_by_home)) +
+  geom_point()
+```
+
+---
+
+# Summarize
+
+* Only plot the average body masses for characters that appear in 4 or more movies
+
+--
+
+```{r, out.width = "70%"}
+starwars %>%
+  filter(!is.na(mass) & !is.na(films)) %>%
+  group_by(films) %>%
+  summarize(mean_body_mass_by_home = mean(mass),
+            count = n()) %>%
+  filter(count >= 4) %>%
+  ggplot(aes(x = count, y = mean_body_mass_by_home)) +
+  geom_point()
+```
+
+---
+
+# Question
+
+* Which character has the highest body mass?
+
+--
+
+```{r}
+starwars %>%
+  select(name, mass) %>%
+  arrange(desc(mass))
+```
+
+
+---
+
+# Question
+
+* Plot the average `height` by species vs. the average `mass` by `species`
+
+--
+
+```{r}
+starwars %>%
+  group_by(species) %>%
+  filter(!is.na(height) & !is.na(mass)) %>%
+  summarize(
+    mean_height = mean(height),
+    mean_mass = mean(mass),
+    count = n()
+  )
+```
+
+---
+
+# Question
+
+* Plot the average `height` by species vs. the average `mass` by `species`
+
+--
+
+.small[
+```{r, out.width = "65%"}
+starwars %>%
+  group_by(species) %>%
+  filter(!is.na(height) & !is.na(mass)) %>%
+  summarize(
+    mean_height = mean(height),
+    mean_mass = mean(mass)
+  ) %>%
+  ggplot(aes(x = mean_height, y = mean_mass, color = species)) +
+  geom_point() 
+```
+]
+
+---
+
+# Grouping
+
+* Can `group_by()` multiple variables
+
+* Count the number of penguins observed from each `species` and `island`  
+
+```{r}
+penguins %>% 
+  group_by(species, island) %>%
+  summarize(count = n())
+```
+
+---
+
+# Grouping 
+
+* Then `ungroup()` to resume the calculations
+
+```{r}
+penguins %>% 
+  group_by(species, island) %>%
+  summarize(count = n()) %>%
+  ungroup() %>%
+  summarize(total = sum(count))
+```
+
+
+---
+
+# Grouping
+
+* Filter the data to only contain penguin species have 100 observations or more?
+
+--
+
+```{r}
+penguins %>%
+  group_by(species) %>%
+  filter(n() >= 100) 
+```
+
+
+---
+
+# Grouping
+
+* Is there a difference in mean `body_mass_g` between penguin `species` on the different `island`s?
+
+--
+
+```{r}
+penguins %>%
+  group_by(species, island) %>%
+  filter(!is.na(body_mass_g)) %>%
+  summarize(mean_mass = mean(body_mass_g), 
+            count = n())
+```
+
+
+---
+
+# `data.frame`s and `tibble`s
+
+* The default data object in `R` is the `data.frame`
+
+* A `tibble` is a `data.frame` with extra bells and whistles
+
+```{r}
+data("iris")
+class(iris)
+
+iris_tibble <- as_tibble(iris)
+class(iris_tibble)
+```
+
+
+---
+
+# Creating `tibble`s
+
+```{r}
+dat <- data.frame(x = 1:5, y = rnorm(5), z = letters[1:5])
+glimpse(dat)
+```
+
+
+```{r}
+dat_tibble <- tibble(x = 1:5, y = rnorm(5), z = letters[1:5])
+glimpse(dat_tibble)
+```
+
+---
+
+# Working with `tibble`s
+
+* Better printing of data
+
+* Easier to perform grouping and nesting operations
+
+* Subsetting tibbles
+    
+    * `$` and `[[` 
+    
+    * `[[` can subset by variable name or index (counting base starts at 1)
+    
+    * `$` subsets by variable name only
+    
+---
+
+.small[
+```{r}
+starwars$name
+```
+]
+
+---
+
+.small[
+```{r}
+starwars[["name"]]
+```
+]
+ 
+ 
+---
+
+.small[
+```{r}
+starwars[[1]]
+```
+]
+ 
+ 
+---
+
+.small[
+```{r}
+starwars %>%
+  .$name
+```
+]
+
+---
+
+# Reading files
+
+* Many options to read files
+
+    * Different file types can have different methods to read files
+    
+* Base `R` options
+
+    * `read.table()`, `read.csv()`, `read.csv2()`, `read.delim()`, `read.delim2()`
+    
+* Excel file type methods using the `readxl` package
+
+    * `read_excel()`, `read_xls()`, `read_xlsx()`
+    
+* Reading files using the `readr` package     
+
+    * `read_csv()` reads comma separated value (csv) files
+    
+        * `read_csv2()` reads semicolon separated files (Europeans and others use `,` instead of `.` in decimal numbers)
+    
+    * `read_tsv()` reads tab delimited files
+    
+    * `read_delim()` reads generic delimiter files
+    
+---
+
+# Reading files
+
+* [Player performance for NHL players](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-03-03)
+
+```{r}
+file_path <- here::here("data", "game_goals.csv")
+file_path
+dat <- read_csv(file_path)
+```
+
+---
+
+```{r}
+glimpse(dat)
+```
+        
+---
+
+* For players who took at least 100 shots in the 2014 season, which play had the highest mean shot percentage?
+
+--
+
+```{r}
+dat %>% 
+  filter(season == 2014) %>%
+  group_by(player) %>%
+  filter(!is.na(shots) & !is.na(shot_percent)) %>%
+  summarize(total_shots = sum(shots),
+            mean_shot_percent = mean(shot_percent)) %>%
+  filter(total_shots >= 100) %>%
+  arrange(desc(mean_shot_percent))
+```
+
+
+
+---
+
+
+* Data about [measles vaccine](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-25)
+
+```{r}
+file_path <- here::here("data", "measles.csv")
+file_path
+dat <- read_csv(file_path)
+```
+
+
+---
+
+```{r}
+glimpse(dat)
+```
+
+---
+
+* Plot the locations of measles outbreaks
+
+```{r, out.width = "60%"}
+dat %>%
+  ggplot(aes(x = lng, y = lat)) +
+  geom_hex()
+```
+
+
+---
+
+* A subset of [speeches at Trump rallies](https://www.kaggle.com/christianlillelund/donald-trumps-rallies)
+
+<!-- Example analyses: https://www.kaggle.com/datasciencecat/what-does-trump-talk-about -->
+
+```{r}
+file_path <- here::here("data", "Trump_rallies")
+all_files <- list.files(file_path, pattern = ".txt")
+
+dat <- list()
+
+for (i in 1:length(all_files)) {
+  dat[[i]] <- read_file(paste(file_path, all_files[i], sep = "/"))
+}
+```
+
+---
+
+* Trump rally speeches
+
+```{r}
+glimpse(dat)
+```
+
+
+---
+
+* examine the fist speech
+
+```{r}
+library(tidytext)
+# examine the fist speech
+dat[[1]] %>%
+  tibble(text = .) %>%
+  drop_na() %>% 
+  unnest_tokens(word, text) %>%
+  group_by(word) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count))## from tidytext package
+```
+
+---
+
+* examine the fist speech (remove the "stop" words)
+
+```{r}
+library(tidytext)
+dat[[1]] %>%
+  tibble(text = .) %>%
+  drop_na() %>% 
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  group_by(word) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count))## from tidytext package
+```
+
+
+---
+
+# Examine the fist speech with a word cloud
+
+```{r, out.width = "70%", fig.align = "center", eval = FALSE}
+library(tidytext)
+library(wordcloud2)
+dat[[1]] %>%
+  tibble(text = .) %>%
+  drop_na() %>% 
+  unnest_tokens(word, text) %>% ## from tidytext package
+  anti_join(stop_words) %>%     ## from tidytext package
+  group_by(word) %>%
+  summarize(count = n()) %>%
+  wordcloud2()
+```
+
+
+---
+
+# Examine the fist speech with a word cloud
+
+```{r, out.width = "60%", fig.align = "center", echo = FALSE, message = FALSE}
+library(tidytext)
+library(wordcloud2)
+dat[[1]] %>%
+  tibble(text = .) %>%
+  drop_na() %>% 
+  unnest_tokens(word, text) %>% ## from tidytext package
+  anti_join(stop_words) %>%     ## from tidytext package
+  group_by(word) %>%
+  summarize(count = n()) %>%
+  wordcloud2()
+```
+
+
+---
+
+# File I/O
+
+* [Data](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-06-02) about [Jelle's Marble Run](https://www.youtube.com/channel/UCYJdpnjuSWVOLgGT9fIzL0g)
+
+```{r}
+filename <- here::here("data", "marbles.csv")
+dat <- read_csv(filename)
+```
+
+--
+
+---
+
+* What went wrong?
+
+--
+
+```{r}
+glimpse(dat)
+```
+
+* Let's look at the file in the terminal using the head command
+
+```{bash, eval = FALSE}
+head ./data/marbles.csv
+```
+
+```{bash, echo = FALSE, comment = ""}
+head ../data/marbles.csv
+```
+
+* There is a line before the variable names!
+
+---
+
+# Skipping lines when reading files
+
+```{r}
+filename <- here::here("data", "marbles.csv")
+dat <- read_csv(filename, skip = 1)
+```
+
+---
+
+# Parsing vectors
+
+* The `parse_*()` functions
+
+.small[
+```{r}
+parse_logical(c(TRUE, FALSE, "TRUE", "FALSE", 1, 0, NA, "ABC"))
+parse_double(c(2.4, "5.7", 22/7, NA, "ABC"))
+```
+]
+
+---
+
+# Parsing vectors
+
+.small[
+```{r}
+parse_integer(c(1, "3", 4.5, NA, "ABC"))
+parse_factor(c("A", "B", "C", "A"))
+```
+]
+
+---
+
+# Parsing vectors
+
+.small[
+```{r}
+parse_date(c("2020-10-31", "2020/10/28", NA))
+parse_date("02/18/2020", "%m/%d/%Y")
+parse_time(c("6:22:16", "22:16"))
+```
+]
+
+
+---
+
+# Parsing a file
+
+* When you load a file using `read_*()` functions, `R` guesses which `parse_*()` functions should be applied to each column
+
+```{r}
+guess_parser(c(2.5, 7))
+guess_parser(c(2.5, "3"))
+guess_parser(c("ABC", "FALSE"))
+guess_parser(c(TRUE, FALSE, NA))
+```
+
+---
+
+# Writng to files
+
+* Use `write_csv()` to write data to a csv file
+    
+    * Can load the data with `read_csv()`
+
+* Use `write_rds()` and `read_rds()` to save and load compressed R data files
+
+    * very useful when running long code to save the output to a file
+
+* Use the `feather` package for file types that are compatible with both `R` and `python`
+    
+    * Cross-language and very fast
+
+* Can check if a directory exists and create it if it doesn't
+
+```{r}
+if(!dir.exists(here::here("results"))) {
+  dir.create(here::here("results"))
+}
+```
+---
+
+# Writng to files
+
+.small[
+```{r}
+write_csv(dat, path = here::here("results", "marbles-clean.csv"))
+```
+
+```{r}
+write_rds(dat, path = here::here("results", "marbles-clean.rds"))
+```
+
+```{r, error = TRUE}
+# remove the data.frame
+rm(dat)
+glimpse(dat)
+```
+
+```{r}
+# useful for saving long-running chunks of code
+dat <- read_rds(here::here("results", "marbles-clean.rds"))
+```
+
+```{r}
+glimpse(dat)
+```
+]
+---
+
+# Tidy data
+    
+* Consistent data formats make analysis much easier
+
+* Tidy data has each observation as a row and each variable as a column
+
+
+---
+
+# Tall vs. wide data
+
+.pull-left[
+* "Tall" data
+
+```{r}
+tall_data <- read.table(header=TRUE, text='
+ subject sex condition measurement
+       1   M   control         7.9
+       1   M     cond1        12.3
+       1   M     cond2        10.7
+       2   F   control         6.3
+       2   F     cond1        10.6
+       2   F     cond2        11.1
+       3   F   control         9.5
+       3   F     cond1        13.1
+       3   F     cond2        13.8
+       4   M   control        11.5
+       4   M     cond1        13.4
+       4   M     cond2        12.9
+')
+# Make sure the subject column is a factor
+tall_data$subject <- factor(tall_data$subject)
+```
+]
+
+
+.pull-right[
+* "Wide" data
+
+```{r}
+wide_data <- read.table(header=TRUE, text='
+ subject sex control cond1 cond2
+       1   M     7.9  12.3  10.7
+       2   F     6.3  10.6  11.1
+       3   F     9.5  13.1  13.8
+       4   M    11.5  13.4  12.9
+')
+# Make sure the subject column is a factor
+wide_data$subject <- factor(wide_data$subject)
+```
+]
+
+---
+
+# Tall vs. wide data
+
+.pull-left[
+```{r}
+tall_data
+```
+]
+
+.pull-right[
+```{r}
+wide_data
+```
+]
+
+---
+
+# Tall vs. wide data
+
+* In general, tall data is preferred
+
+    * Easier to generate summaries of the data
+    
+    * Can generate key-value pairs (dictionaries)
+    
+    * Most statistical models require long data for inputs
+
+
+---
+
+# Convert from tall to wide
+
+```{r}
+tall_data
+```
+
+```{r}
+tall_data %>% 
+  pivot_wider(names_from = condition, values_from = measurement)
+```
+
+
+---
+
+# Convert from wide to tall
+
+```{r}
+wide_data
+```
+
+```{r}
+wide_data %>% 
+  pivot_longer(cols = c(control, cond1, cond2), names_to = "measurement")
+```
+
+    
+---
+
+# Completing data
+
+* The `tibble` below does not have data for every case
+
+
+
+```{r}
+df <- tibble(
+  group = c(1:2, 1),
+  item_id = c(1:2, 2),
+  item_name = c("a", "b", "b"),
+  value1 = 1:3,
+  value2 = 4:6
+)
+```
+
+* Complete the group variable so that `item_id` and `item_name` have all their possible combinations filled in
+
+```{r}
+df %>% complete(group, nesting(item_id, item_name))
+```
+
+---
+
+# Completing data
+
+* Fill in the completed values 
+
+```{r}
+df %>%
+  complete(group, nesting(item_id, item_name), 
+           fill = list(value1 = "foo", value2 = "bar"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

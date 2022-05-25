@@ -1,0 +1,154 @@
+---
+title: "Minimal Working Examples"
+author: "John Tipton"
+date: "8/26/2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message = FALSE, echo = FALSE}
+library(knitr)
+library(here)
+```
+
+If you want to ask a question about code, computer errors, etc., make sure you include a Minimal Working Example (MWE) to describe the problem. This is also called a reproducible example (repex). Examples include on  [MWEs in R](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) and [How to write an MWE](https://stackoverflow.com/help/minimal-reproducible-example).
+
+## What is a MWE        
+
+The examples should be 
+
+- **Minimal:** The example should contain only the relevant amount of code and description to reproduce the problem. Any unnecessary code should be removed from the example to make the question as minimal as possible.
+
+- **Complete:** The example should be able to reproduce the error in question. A question like "My thing is broken" isn't helpful. The goal is to do the work in asking the question in a way so that whoever is answering the question can easily zoom in on the error.
+
+- **Reproducible:** Make sure the code that you are asking the question about actually reproduces the error that you are having.
+
+
+## How do I write an MWE
+
+### First, make sure there actually is a problem
+
+- Make sure you have a clean environment. In linux, start a new terminal. In python/R, start a fresh session and make sure all global variables are deleted.
+
+- If you are trying to install packages or other system-based errors, try a new terminal. If this is a machine you control, try restarting the system.
+        
+## Writing the MWE
+
+- First, focus on describing the problem clearly. You have been frustrated enough to ask for help. That means you have been trying to solve the problem and thinking about this particular issue in detail. Whoever you ask for help likely doesn't have all the background information and hasn't been thinking about the problem. 
+    
+    - In programming, this is called "rubber duck debugging" 
+    
+    - Explain your problem to a rubber duck in all the details necessary for the rubber duck to understand the problem -- remember, rubber ducks don't know anything so you have to speak clearly and describe all the steps and what the goals of the code are.
+    
+    - Often, just articulating your problem clearly is enough to solve the issue.
+    
+        - clearly define the goal
+        - clearly define the error that is occuring
+        - only include information and code that is directly related to both the goal and the error
+
+    ```{r, echo = FALSE, fig.align = "center", out.width = "70%"}
+    if (!knitr:::is_latex_output()) {
+        knitr::include_graphics(here::here("img", "rubber+duckie_CGMcKCEy4Dct2.gif"))
+    }
+    ```
+
+
+
+
+## Isolating the error
+
+- Once you have verified that the problem is reproducible and you have clearly defined the goal fo the code and the errors that are occurring, the next step is to isolate the issue in a minimal way. If you have a very large file with lots of code and/or text, it will be hard to pinpoint the error. To solve this, you can copy/paste the suspected code into a new file. 
+
+- If the error requires a dataset, construct a minimal dataset to reproduce the error.
+
+    - either load the data (if it is commonly available) or generate new data that are similar to the data of interest (for example, the same variables with the same variable types). If you are generating your own data, this can typically be done with a either a vector/matrix/data.frame/array. If there are random components, set the random seed.
+    
+    
+## Example 1
+
+### Poorly done MWE 1
+
+- I'm running into an error on the HW.
+
+### Is this a MWE?
+
+- On problem 2.a on HW 2, I am trying to write a shell script that prints out the names of the Beatles and keep getting the output: permission denied
+
+My shell script (why_wont_you_work.sh) is 
+
+```
+!# /bin/bash
+
+echo Beatles
+```
+
+To get this error, I type in the working directory that contains `why_wont_you_work.sh` 
+
+```
+./why_wont_you_work.sh
+```
+
+## Example 2
+
+### Is this a MWE
+
+I was wondering if I could get one of you to help me with problem number 2 on the week 3 quiz? I’m not exactly sure what I’m doing wrong because I’ve followed the videos and powerpoints as closely as I could. Thank you. 
+
+```{r echo = FALSE, fig.align = "center", out.width = "70%"}
+knitr::include_graphics(here::here("images", "Quiz3.png"))
+```
+
+- Close but needs work
+
+1. The goal of the question isn't clear and self contained. What is the question that problem 2 on quiz 3 is asking? 
+
+    Write some Bash code to loop over all of the \*.fasta files in watermelon_files/mt_genomes/ and write out the number of characters in each file. This number is a close approximation to the size of the genome. The first line of your ouptut will look like this:
+
+    ```
+    372180 arabidopsis_thaliana.fasta
+    ```
+    
+2. The output of the code as written isn't clearly defined. How was the code run. Were there any error messages? What were they? What data/file paths were needed? 
+
+**Better version of the question**
+I was wondering if I could get one of you to help me with problem number 2 on the week 3 quiz? The goal is to write a bash script to loop over all of the `*.fasta` files in `~/example_files/watermelon_files/mt_genomes/` and write out the number of characters in each file. 
+
+My bash script `my_first_loop.sh` is in the home directory `~` and the contents are 
+
+```
+!# /bin/bash
+
+for i in 1
+do
+    file wc -c /example_files/watermelon_file/mt_genomes/*.fasta
+done
+```
+
+running the file in the current working directory gives the output ...
+
+
+# Takehome Message
+
+The goal of the MWE is 
+
+1. Clarify the issue. Writing an MWE forces you, the question-asker, to think carefully about the problem and clearly articulate the issue. Remember, you have been dealing with this problem for long enough that you feel that you need to ask for help. Whoever you are asking to help is only familiar with the problem based on the information that you provide. They do not have the context of your issue. This is even true on HW/Datacamp/Quiz questions. Therefore, you need to put yourself into the shoes of whoever is going to help you with the question. Your mindset needs to be "what can I do to make the description of the issue as clear and simple as possible?" 
+
+2. Get you help. Ultimately, you have a question that you want answered. By writing a good MWE, you will get your help quicker and easier. If I, as the the question-answerer, can quickly copy and paste code and fully reproduce your issue then I can spend more of my time on helping you to find a solution rather than trying to reproduce your issue. This is vitally important when writing MWEs that you are asking the general public to help with (i.e. on stack overflow).
+
+## More advanced MWEs -- posting questions on the internet, partiularly for python and R
+
+- At the end of your example, include as an appendix/comment the output of the following to include information about your particular computing environment
+    -  if your example is in `R`:
+        ```{r, eval = FALSE}
+        sessionInfo()
+        ```
+    - if your example is in python:
+        ```{python, eval = FALSE}
+        import IPython
+        print IPython.sys_info()
+        ```

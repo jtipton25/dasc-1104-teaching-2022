@@ -1,0 +1,167 @@
+---
+title: "Setting up VS code to run python"
+author: "Andrew Alverson and John Tipton"
+date: |
+    | Created: 9/20/2020
+    | Last modified: 9/20/2020
+output:
+  html_document:
+    number_sections: yes
+  pdf_document: default
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+## default options for compiling the Rmarkdown document
+knitr::opts_chunk$set(
+  echo      = TRUE, 
+  tidy      = TRUE, 
+  fig.align = "center",
+  out.width = "100%"
+)
+knitr::opts_chunk$set(package.startup.message = FALSE)
+```
+
+
+When setting up your computer to run python code, a common issue is that most computers have multiple versions of python installed. First, you need to choose your python version in VS code. To choose the version of python in VS code, first create a new file using the menu bar *file* $\Rightarrow$ *new file* and then save the file ending with `.py` (e.g., `first-file.py`).
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics(here::here("images", "new-file.png"))
+```
+
+```{r, echo = FALSE, out.width = "25%"}
+knitr::include_graphics(here::here("images", "save-py.png"))
+```
+
+
+If this is your first time opening a python file, VS code will ask if you want to install recommended python modules, say yes to this. Once the recommended python modules are installed, you will get a popup asking to choose your python version. Click on this popup.
+
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics(here::here("images", "python-choose.png"))
+```
+
+
+
+Make sure you choose a python version 3.X.X. On your computer, you should expect to see a different version of python than what is shown here. 
+
+```{r, echo = FALSE, out.width = "80%"}
+knitr::include_graphics(here::here("images", "python-interpreter.png"))
+```
+
+Choose a version of python (version 3.X.X) and write down the path to that version of python. For my computer, my python path that I chose is `/Users/tips/Library/r-miniconda/bin/python`. Again, the path for your python version will be different. The path will be referenced as `<path-to-python>`. 
+
+Next, we need to set the system python version. This can be tricky so make sure you follow the instructions.
+
+## Setting the python alias on Mac
+
+I am assuming you are working on MacOs Mojave (10.14.6). Open a terminal on your computer and type
+
+```{bash, eval = FALSE}
+which python
+python --version
+```
+
+If the output of `python --version` displays the python version chosen in VS code, you likely have the same python version aliased for both VS code and your system. Most likely, the output of `python --version` will not be the same as your chosed interpreter in VS code. In that case you can enter in the terminal
+
+```{bash, eval = FALSE}
+echo "alias python=<path-to-python>" >> ~/.zshrc
+```
+
+where `<path-to-python>` is the path from the VS code interpreter choice. For my computer, this command is
+
+```{bash, eval = FALSE}
+echo "alias python=/Users/tips/Library/r-miniconda/bin/python" >> ~/.zshrc
+```
+
+To make sure the system recognizes the change, in terminal type
+
+```{bash, eval = FALSE}
+cat ~/.zshrc
+```
+
+and see if the output includes the line ` python=<path-to-python>`. If the file doesn't include this line, run the line `echo "alias python=<path-to-python>" >> ~/.zshrc` again. Then, in terminal type
+
+```{bash, eval = FALSE}
+source ~/.zshrc
+```
+
+to update the system path variable and then check the python version with 
+
+```{bash, eval = FALSE}
+python --version
+```
+
+Now the python version should be the same as your chosen interpreter from VS Code
+
+* More details and motivation for this is [available here](https://opensource.com/article/19/5/python-3-default-mac)
+
+## Microsoft Windows
+
+**Note: This HAS NOT BEEN TESTED**
+
+* The [stackoverflow post here](https://stackoverflow.com/questions/5087831/how-should-i-set-default-python-version-in-windows#:~:text=Always%20type%20py%20instead%20of,script%20from%20the%20command%20line.&text=Set%20your%20preferred%20default%20version,your%20default%20by%20typing%20py%20.) is a good resource
+
+Check your python version by opening the console and typing 
+
+```
+py
+```
+
+You can get the current path to python3 using 
+
+```
+echo %PY_PYTHON3
+```
+
+You can [read the tutorial here about setting Path variables](http://www.dowdandassociates.com/blog/content/howto-set-an-environment-variable-in-windows-command-line-and-registry/), particularly the part about the use of the `setx` command. We want to modify the python3 path variable stored as `PY_PYTHON3` using the command
+
+
+```
+setx PY_PYTHON3 "<path-to-python>"
+```
+
+Then, close your console window and start a new console window. Check the python path using 
+
+```
+echo %PY_PYTHON3
+```
+
+This should now be the same as the interpreter you chose of VS code.
+
+
+
+
+
+
+
+
+
+
+<!-- There are issues when sharing files that are created on Windows machines when using the file on a linux-based machine (including MacOS). This is related to the way a computer defines a new line (`\n` in linux and `\r\n` on Windows). -->
+
+<!-- To get to the options to change the line files, open the settings by clicking the gear icon in the lower left and then choose settings. -->
+
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here::here("images", "VS-settings.png")) -->
+<!-- ``` -->
+
+<!-- Once the settings window opens, in the search bar at the top of the window, search for `end of line` and hit return. This will open a bunch of options. In the option `Files: Eol` there will be a drop-down menu. Choose the drop down menu and select the `\n` option. At the bottom of the drop-down menu, this will then show `LF`.  -->
+
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here::here("images", "VS-settings-end-of-line.png")) -->
+<!-- ``` -->
+
+
+<!-- Open up a new python script and verify that the end of line file type is `LF` in the lower menu bar. If the end of line file type shows `CRLF`, quit and restart VS code. If the end of line file is still `CRLF` repeat the process listed above. -->
+
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here::here("images", "VS-settings-LF.png")) -->
+<!-- ``` -->
+
+
+
+<!-- # References -->
+
+<!-- This tutorial was based on []() -->
+

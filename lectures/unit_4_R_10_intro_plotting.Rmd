@@ -1,0 +1,816 @@
+---
+title: "Data Visualization with ggplot2"
+author: "John Tipton"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false      
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+urlcolor: blue
+knit: pagedown::chrome_print
+---
+
+```{css, echo = FALSE}
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+```
+
+
+```{r setup, include = FALSE, cache = FALSE, message = FALSE}
+## set some knitr options
+library(knitr)
+library(here)
+# ## Figure settings, defaults to png files
+opts_chunk$set(fig.align='center', fig.width = 16/4,
+               fig.height = 9/4, fig.show = 'hold', par = TRUE,
+               dev='png',
+               dpi=72*4, out.width = "80%")
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s'>%s</span>", color,
+      x)
+  } else x
+}
+
+hl <- function(x) {
+  colorize(x, color = "corals2")
+}
+```
+
+# Readings
+
+* R for data science 
+    * Introduction
+    * Chapters 1 (Data visualization with `ggplot2`) and 5 (Exploratory data analysis)
+
+---
+
+# `data.frame` The first class object
+
+* A `data.frame` is a rectangular collection of variables (columns) and observations (rows). 
+
+* Built in datasets can be explored with `data()`
+
+```{r, eval = FALSE}
+data()
+```
+
+---
+
+# Example: Palmer Penguins
+
+```{r, message = FALSE}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+.small[
+```{r}
+penguins
+```
+]
+
+---
+
+# First ggplot
+
+* start by exploring the data. Use the `str()` or `glimpse()` functions to explore the data
+
+
+
+.small[
+```{r}
+str(penguins)
+```
+]
+
+.small[
+```{r}
+glimpse(penguins)
+```
+]
+
+---
+
+# flipper length and body mass
+
+* Describe what we see
+
+```{r ggplot}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm))
+```
+
+---
+
+# Plotting aesthetics
+
+* ggplot is a lot of code for a simple plot!
+
+
+--
+
+```{r base}
+plot(flipper_length_mm ~ body_mass_g, data = penguins)
+```
+
+* Wasn't that easier?
+
+---
+
+# Aesthetics
+
+- What if I want to color my plot by sex? 
+
+--
+
+- What if I want to make my circles to have size relative to bill depth?
+
+--
+
+- What if...
+
+--
+
+* Use aesthetics.
+
+    * Aesthetics map a characteristic given a variable.
+    
+    * Great for quick visually communication.
+
+---
+
+# Using aesthetics
+
+```{r aes-1}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm,
+                             color = sex))
+```
+
+
+---
+
+# Using aesthetics
+
+```{r, aes-2}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm,
+                             color = sex, size = bill_length_mm))
+```
+
+---
+
+# Available aesthetics
+
+
+* size
+
+* color
+
+* fill
+
+* shape
+
+* transparency (`alpha`)
+
+---
+
+# Facets
+
+* What if I want to show multiple plots where each plot is determined by a variable?
+
+--
+
+* Facets.
+
+    * `facet_wrap()` for a single variable.
+    
+    * `facet_grid()` for a grid of two variables.
+    
+---
+
+```{r facet-1}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+    facet_wrap(~ sex)
+```
+
+---
+
+```{r facet-2}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+    facet_grid(island ~ sex)
+```
+
+
+---
+
+# Geometries
+
+* What kind of plot do you want?
+
+    * histograms --`geom_histogram()`
+    * scatterplot -- `geom_point()`
+    * boxplots -- `geom_box()`
+    * dotplot -- `geom_dotplot()`
+    * line plots -- `geom_line()`
+    
+* Each `geom` has specific aesthetic requirements
+
+* Use the help for specifics
+    * `?geom_scatter`
+
+* Many, many others -- virtually any kind of plot you want.
+    * [ggplot cheatsheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+
+* Many custom packages for specific plot types
+
+---
+
+```{r geom-1}
+ggplot(data = penguins) +
+    geom_histogram(mapping = aes(x = body_mass_g))
+```
+
+---
+
+```{r geom-2}
+## what happens if you use color = sex?
+ggplot(data = penguins) +
+    geom_histogram(mapping = aes(x = body_mass_g, fill = sex)) 
+```
+
+---
+```{r geom-3}
+## smooth over the density
+ggplot(data = penguins) +
+    geom_violin(mapping = aes(y = body_mass_g, x = sex)) 
+```
+
+---
+
+```{r geom-4}
+## what happens if you use color = sex?
+ggplot(data = penguins) +
+    geom_boxplot(mapping = aes(x = body_mass_g, fill = sex)) 
+```
+
+---
+
+* You can even use multiple aesthetics
+
+```{r geom-5}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm)) +
+    geom_smooth(mapping = aes(x = body_mass_g, y = flipper_length_mm))
+```
+
+---
+
+* geoms can have different aesthetics `aes()`.
+
+```{r geom-6}
+ggplot(data = penguins) +
+    geom_point(mapping = aes(x = body_mass_g, y = flipper_length_mm,
+                             color = sex)) +
+    geom_smooth(mapping = aes(x = body_mass_g, y = flipper_length_mm, 
+                              fill = sex, color = sex))
+```
+
+---
+
+* Common aesthetics `aes()` can be added to the ggplot function.
+
+```{r geom-7}
+ggplot(data = penguins,
+       mapping = aes(x = body_mass_g, y = flipper_length_mm, color = sex)) +
+    geom_point() +
+    geom_smooth(mapping = aes(fill = sex))
+```
+
+
+---
+
+# Statistical transformations
+
+* `ggplot` can perform statistical transformations and fit basic models
+
+* start with `starwars` data
+
+```{r}
+data("starwars")
+glimpse(starwars)
+```
+
+---
+
+# Bar plot
+
+```{r, bar}
+ggplot(data = starwars, mapping = aes(x = sex)) +
+  geom_bar()
+```
+
+
+---
+
+# Bar plot using statistics
+
+* count the number in each category of sex
+
+```{r, count}
+ggplot(data = starwars, mapping = aes(x = sex)) +
+  stat_count()
+```
+
+---
+
+# Bar plot using statistics
+
+* count the number in each category of sex
+
+```{r, stat-count}
+ggplot(data = starwars, mapping = aes(x = sex)) +
+  geom_bar(stat = "count")
+```
+
+---
+
+# Bar plot using statistics
+
+* The relative number in each category of sex
+
+```{r, prop}
+ggplot(data = starwars, mapping = aes(x = sex, y = stat(prop), group = 1)) +
+  geom_bar()
+```
+
+---
+
+# `stat_summary`
+
+* plot the extent of the
+
+```{r, stat-summary}
+ggplot(data = starwars, aes(x = sex, y = height)) +
+  stat_summary(
+    fun.min = min,
+    fun.max = max,
+    fun     = mean
+  )
+```
+
+---
+
+# `stat_summary`
+
+* Plot the quantiles
+
+```{r, stat-summary-quantile}
+ggplot(data = starwars, aes(x = sex, y = height)) +
+  stat_summary(
+    fun.min = function(z) quantile(z, prob = 0.1),
+    fun.max = function(z) quantile(z, prob = 0.9),
+    fun     = median
+  )
+```
+
+
+---
+
+# Plotting big data
+
+* Use binning
+
+```{r geom-8}
+ggplot(data = penguins, aes(x = body_mass_g, y = flipper_length_mm)) +
+    geom_hex()
+```
+
+---
+
+# Positions
+
+* can use fill and color to highlight subsets of data
+
+* positions of "dodge" and "jitter" can improve visualization.
+
+
+.pull-left[
+```{r, bar-left}
+ggplot(penguins, aes(x = species)) +
+  geom_bar()
+```
+]
+
+.pull-right[
+```{r, bar-right}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar()
+```
+]
+
+
+---
+
+* position = "fill"
+
+.pull-left[
+```{r, bar-left2}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar()
+```
+]
+
+.pull-right[
+```{r, bar-right2}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+```
+]
+
+---
+
+* position = "identity"
+
+    * notice these are overlapping
+
+.pull-left[
+```{r, bar-left3}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar()
+```
+]
+
+.pull-right[
+```{r, bar-right3}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "identity", alpha = 0.5)
+```
+]
+
+---
+
+* position = "dodge"
+
+.pull-left[
+```{r, bar-left4}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar()
+```
+]
+
+.pull-right[
+```{r, bar-right4}
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "dodge")
+```
+]
+
+---
+
+* position = "jitter"
+
+    * use the built-in `mpg` dataset
+
+```{r}
+glimpse(mpg)
+```
+
+
+---
+
+# Positions
+
+* position = "jitter"
+
+    * Useful when observations overlap
+
+.pull-left[
+```{r, bar-left5}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+```
+]
+
+.pull-right[
+```{r, bar-right5}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(position = "jitter")
+```
+]
+
+---
+
+# Positions
+
+* position = "jitter"
+
+.pull-left[
+```{r, box-jitter1}
+ggplot(mpg, aes(x = trans, y = hwy)) +
+  geom_boxplot() +
+  geom_point()
+```
+]
+
+.pull-right[
+```{r, box-jitter2}
+ggplot(mpg, aes(x = trans, y = hwy)) +
+  geom_boxplot() +
+  geom_point(position = "jitter")
+```
+]
+
+---
+
+# Exploratory Data Analysis
+
+* EDA is an artform
+
+* Explore and learn from the data
+
+* Guides model development
+
+* Identifies transformations of the data that might be helpful
+
+* Helps in formulating questions about the data
+
+* Express creativity!
+
+---
+
+# Tidy data
+
+* Each row is an observation
+
+    * An observation is a set of measurements about an element
+    
+    * The element is the object on which measurement is made
+
+* Each column is a variable
+
+    * A variable is a characteristic of the element that can take on an value
+    
+* Tidy data is tabular where each row is an observation and each column is a variable
+
+```{r}
+str(diamonds)
+```
+
+# EDA
+
+* Measures of central tendency
+
+    * mean, median, mode
+
+* Measures of variability
+
+    * variance/standard deviation, range, IQR/quantiles
+    
+* Missing values? 
+
+    * What do you do with missing values?
+    
+    * What about outliers/unusual observations?
+
+* Covariance
+
+* Outliers/unusal values
+
+
+---
+
+# Distributions
+
+* Visualize marginal (one variable) distributions
+
+    * histograms `geom_histogram()`
+    
+    * density plots `geom_dens()`
+    
+    * boxplots `geom_boxplot()`
+    
+    * violin plots `geom_violin()`
+    
+
+---
+
+# Distributions
+    
+.pull-left[
+```{r, message = FALSE, warning = FALSE}
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram()
+```
+```{r}
+ggplot(diamonds, aes(x = price)) +
+  geom_density()
+```
+
+]
+
+
+.pull-right[
+```{r}
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot()
+```
+```{r}
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_violin()
+```
+]
+
+---
+
+# Missing values
+
+* As a rule, don't just ignore missing values blindly
+
+    * I conduct a survey about income and leisure time. Why shouldn't I ignore those people that don't respond?
+    
+* Many functions have a `na.rm` option
+
+```{r}
+mean(penguins$bill_length_mm)
+mean(penguins$bill_length_mm, na.rm = TRUE)
+```
+   
+---
+
+# Missing values
+
+
+
+.pull-left[ 
+
+* Notice the warning
+
+```{r}
+ggplot(penguins, aes(y = bill_length_mm)) +
+  geom_boxplot()
+```
+]
+
+.pull-right[
+
+* No warning with `na.rm = TRUE`
+
+```{r}
+ggplot(penguins, aes(y = bill_length_mm)) +
+  geom_boxplot(na.rm = TRUE)
+```
+]
+
+---
+
+# Missing values
+
+* What if missing values are important?
+
+* `airquality` dataset is missing the Ozone variable in June. 
+
+.pull-left[
+
+* Ozone measurements vs. Month
+
+```{r warning = FALSE}
+airquality %>%
+  ggplot(aes(x = factor(Month), y = Ozone)) +
+  geom_boxplot()
+```
+]
+
+.pull-right[
+
+* Missing values vs. Month
+
+```{r}
+airquality %>%
+  mutate(missing_ozone = is.na(Ozone)) %>%
+  ggplot(aes(fill = missing_ozone, x = Month)) +
+  geom_density(alpha = 0.5)
+```
+]
+
+
+
+
+---
+
+# Covariation
+
+* Statistical modeling is about finding patterns and covariation in data
+
+* Is there a relationship between bill depth and bill length?
+
+```{r, out.width = "70%", message = FALSE, warning = FALSE}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point() +
+  stat_smooth(method = "lm")
+```
+
+---
+
+# Covariation
+
+* Statistical modeling is about finding patterns and covariation in data
+
+* Is there a relationship between bill depth and bill length?
+
+```{r, out.width = "70%", message = FALSE, warning = FALSE}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = sex)) +
+  geom_point() +
+  stat_smooth(method = "lm")
+```
+
+---
+
+# Covariation
+
+* Statistical modeling is about finding patterns and covariation in data
+
+* Is there a relationship between bill depth and bill length?
+
+```{r, out.width = "70%", message = FALSE, warning = FALSE}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  stat_smooth(method = "lm")
+```
+
+---
+
+# Covariation
+
+* Statistical modeling is about finding patterns and covariation in data
+
+* Is there a relationship between bill depth and bill length?
+
+```{r, out.width = "70%", message = FALSE, warning = FALSE}
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  facet_wrap(~ sex) +
+  stat_smooth(method = "lm")
+```
+
+---
+
+# Pairs plots
+
+
+```{r, out.width = "70%", message = FALSE, warning = FALSE, fig.width=16/2, fig.height = 9/2}
+penguins %>%
+  select(species, body_mass_g, ends_with("_mm")) %>%
+  GGally::ggpairs(aes(color = species)) +
+  scale_colour_manual(values = c("darkorange", "purple", "cyan4")) +
+  scale_fill_manual(values = c("darkorange", "purple", "cyan4"))
+```
+
+---
+
+# Namespaces
+
+* What's the deal with the `GGally::ggpairs()` function on the last slide?
+
+    * Often in programming there are different packages that have functions with the same name 
+    * The **namespace** resolves this issue
+    
+    * Use the `ggpairs` function from the `GGally` package

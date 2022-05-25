@@ -1,0 +1,455 @@
+---
+title: "Teaching R in DASC 1104"
+subtitle: "R Part I"
+author: "John Tipton"
+institute: "The University of Arkansas"
+date: "2021/06/07 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false      
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+urlcolor: blue
+knit: pagedown::chrome_print
+---
+
+```{css, echo = FALSE}
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+# Materials
+
+- Available on gitHub at [https://github.com/jtipton25/dasc-1104-teaching](https://github.com/jtipton25/dasc-1104-teaching) 
+
+---
+
+# Guiding principles
+
+* Make the initial burden to working with real data as minimal as possible
+
+--
+
+* Teach a **process** of working with data more than the actual programming
+
+    * Focus on actions/principles rather than specific syntax
+    
+    * More than in other programming classes, focus on [reproducibility](https://rstats.wtf/save-source.html#use-an-ide)
+    
+
+* Great resources for learning R/python/git/shell
+
+    * [https://software-carpentry.org/lessons/index.html](https://software-carpentry.org/lessons/index.html)
+
+--
+
+
+* Scaffold Learning objectives and provide many examples
+    
+    * Here is a dataset -- Generate a scatterplot of mpg vs. engine displacement (demo with `mtcars`)
+    
+    * Start with simple examples and show how to build
+    
+    * Encourage student participation by working examples alongside 
+
+---
+
+# Guiding principles
+
+* Allow for student creativity and spontaneity
+
+    * Different from typical programming classes
+    
+    * Here is a dataset -- Create two visualizations that tell me something interesting about it
+    
+--
+
+* Focus on the high-level concepts before getting into the details
+
+    * Some low level knowledge is ok -- variable types
+    
+    * Other low level knowledge not needed at this stage
+    
+        * Parsing files one line at a time, etc.
+        
+        
+
+
+---
+
+
+# The Rstudio IDE
+
+- I recommend the [RStudio IDE](https://www.rstudio.com/products/rstudio/), but you do not have to.
+
+    - Allows for R and python code development
+    
+* Can be installed [locally](https://www.rstudio.com/products/rstudio/) or on a [server](https://www.rstudio.com/products/workbench/) (I use a SSO server option)
+
+* [RStudio Cloud](https://rstudio.cloud/) provides a remote-hosting option for teaching
+
+---
+
+# Project-oriented workflows
+
+- Especially useful for students with less comp-sci experience
+    
+- Makes file path management easier
+    
+- References [here](https://rstats.wtf/project-oriented-workflow.html) and [here](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/) and [here](https://swcarpentry.github.io/r-novice-gapminder/02-project-intro/)
+
+
+
+## What does this code do?
+
+```{r, eval = FALSE}
+library(tidyverse)
+setwd("~/Documents/John/hw-1")
+dat <- read_csv("my-secrets.csv")
+```
+
+--
+
+* What might be the issue with this code?
+
+---
+
+# Hands-on experience project management in Rstudio
+
+* Use of Rstudio projects (5-10 minutes)
+
+* Use of the `here` library and the `here()` function
+
+* Namespaces in `R`
+
+* Generate "data file" in excel, load and process the data
+
+* For more details, see Lecture 9 in unit 4
+
+
+
+
+---
+
+# The Two Towers
+
+- The R language has split into two dialects "base R" and the "tidyverse"
+
+- [Much](http://varianceexplained.org/r/teach-tidyverse/) has [been written](https://blog.ephorie.de/why-i-dont-use-the-tidyverse) about this difference
+
+- Having learned Base R first and `tidyverse` second -- I am a strong proponent of the `tidyverse` -- there is a strong movement to [translate this syntax to python](https://srobert4.github.io/post/2019-08-08-tidyversetopandas/)
+
+    - Most of my students would agree that `tidyverse` is the way to go
+    
+    - [Many python users](https://stmorse.github.io/journal/tidyverse-style-pandas.html) also agree
+    
+    
+---
+
+# The Rings of Power
+
+
+```{r, message = FALSE}
+library(tidyverse)
+library(palmerpenguins)
+glimpse(penguins)
+```
+
+
+---
+
+# The Rings of Power
+
+* Create a histogram of `body_mass_g`
+
+.pull-left[
+* Using base R
+
+
+```{r}
+hist(penguins$body_mass_g)
+```
+]
+.pull-right[
+* Using `tidyverse`
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram()
+```
+]
+
+---
+
+# But they were all of them decieved
+
+* Create a histogram of `body_mass_g` for each `species` and `sex`
+
+.pull-left[
+* Using base R
+.very-small[
+
+```{r}
+layout(matrix(1:6, 2, 3))
+hist(penguins[penguins$sex == "male" & penguins$species == "Adelie", ]$body_mass_g)
+hist(penguins[penguins$sex == "male" & penguins$species == "Chinstrap", ]$body_mass_g)
+hist(penguins[penguins$sex == "male" & penguins$species == "Gentoo", ]$body_mass_g)
+hist(penguins[penguins$sex == "female" & penguins$species == "Adelie", ]$body_mass_g)
+hist(penguins[penguins$sex == "female" & penguins$species == "Chinstrap", ]$body_mass_g)
+hist(penguins[penguins$sex == "female" & penguins$species == "Gentoo", ]$body_mass_g)
+```
+]
+]
+.pull-right[
+* Using `tidyverse`
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram() +
+  facet_grid(sex ~ species)
+```
+]
+
+---
+
+# For in secret the Dark Lord Sauron forged in secret a Master Ring, to control all others. 
+
+* How many penguins are in the dataset of each `sex` and `species`?
+
+.pull-left[
+```{r}
+with(penguins, table(sex, species))
+```
+]
+
+.pull-right[
+```{r}
+penguins %>%
+  count(sex, species)
+```
+]
+
+* Where did the `NA` values go?
+
+
+---
+
+# One ring to rule them all!
+
+* What does this code do?
+
+.small[
+```{r, eval = FALSE}
+aggregate(airquality[, "Ozone"], 
+          list(Month = airquality[, "Month"]), 
+          mean, na.rm = TRUE)
+```
+]
+--
+.small[
+```{r, echo = FALSE}
+aggregate(airquality[, "Ozone"], 
+          list(Month = airquality[, "Month"]), 
+          mean, na.rm = TRUE)
+```
+]
+--
+.small[
+```{r, eval = FALSE}
+airquality %>% 
+  group_by(Month) %>% 
+	summarize(mean_o3 = mean(Ozone, na.rm = TRUE))
+```
+]
+--
+.small[
+```{r, echo = FALSE}
+airquality %>% 
+  group_by(Month) %>% 
+	summarize(mean_o3 = mean(Ozone, na.rm = TRUE))
+```
+]
+
+--
+
+* Which example is more **human readable?** 
+
+---
+
+# Working with RMarkdown
+
+* Demo with RMarkdown examples (15-20 minutes)
+
+.pull-left[
+* Code chunks
+
+* Running code (ctrl-enter, run all above)
+
+* installing vs. loading packages
+
+* Restarting the R environment and clearing variables
+
+    * Do this often
+
+* **Settings**--don't save your workspace
+
+* Plain text, math equations, and communication
+
+* Code chunk options
+
+
+]
+
+.pull-right[
+
+* File paths and loading data
+
+* Managing the project environment
+
+* Formatting and troubleshooting
+
+* The tinytex/latex problem
+
+    * `install.packages('tinytex')
+    * `tinytex::install_tinytex()`
+
+* python code in RMarkdown
+
+* sourcing in scripts
+
+* live preview (I'm learning this in real time)
+
+* Getting help with `?`
+]
+
+
+---
+
+# What to teach
+
+- Programming concepts are important
+
+    - loops, data structures, functions
+    
+- But, I **don't** teach R as if it were a programming language
+    - R is a programming language for **data science**
+
+    - Many "real" programmers don't like R because it is not a "progamming first" language
+    
+        - R is a **data-science** first language, don't get mad when it isn't what you want it to be
+    
+    - Show how to do data science using R as a tool
+    
+    
+- Lead with data visualization, follow up with data manipulation
+
+--- 
+
+# Explore for meaningful datasets to use
+
+    
+1) [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday)
+    
+2) [FiveThirtyEight](https://github.com/fivethirtyeight/data)
+
+3) [BuzzFeed News](https://github.com/BuzzFeedNews/everything)
+    
+4) [Kaggle](https://www.kaggle.com/datasets)
+
+5) [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
+
+---
+
+# Focus on basic syntax and datatypes (demo)
+
+## Typically in class, I include code in the slides, but not here
+
+- vectors
+
+- matrices
+
+- arrays
+
+- lists
+
+- factors
+
+- data.frames
+
+---
+
+
+# Atomic types (demo)
+
+- logical/boolean
+
+- numeric
+
+- integer
+
+- complex (not covered)
+
+- character/string
+
+
+---
+
+# Working with data
+
+* what are data.frames?
+
+* accessing rows/columns with `[`
+
+* accessing variables with `[`
+
+* accessing variables with `$`
+
+---
+
+
+
+
+
+
+
+
+
+
+
+

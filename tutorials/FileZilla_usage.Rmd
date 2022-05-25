@@ -1,0 +1,30 @@
+---
+title: "FileZilla Setup"
+author: "Kathryn Judy"
+date: "9/11/2020"
+output: html_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Downloading FileZilla
+To download the FileZilla client, visit the download page for [Windows](https://filezilla-project.org/download.php) or [Mac](https://filezilla-project.org/download.php?platform=osx) and follow the [installation instructions](https://wiki.filezilla-project.org/Client_Installation#Downloading_FileZilla) if you have any trouble. 
+
+## Connecting FileZilla to the rstats server
+When the installation is complete, FileZilla will open a window where you can see local files (on the left) and make a remote connection (grey bar at the top). In the grey bar, type the Host name for the server as `sftp://rstats.uark.edu`. The username is your email prefix (that you would normally type before `@rstats.uark.edu` when using `ssh` to access the server) and the password is your usual password for accessing rstats. Leave the "port" section blank, and click "Quickconnect".  
+
+If the connection was successful, the files and directories in your home drive on the server will appear on the right side of the FileZilla window. Note: you must either be on campus WiFi or using the University VPN to connect to the server.
+
+## Transferring Files with Filezilla
+A tutorial of using FileZilla with pictures can be found [here](https://wiki.filezilla-project.org/FileZilla_Client_Tutorial_(en)). In essence, navigate to the file(s) and directories you wish to transfer, and drag and drop them from the local pane to the remote (or vice versa).  
+
+Files will be copied to the new location. Status of the transfer can be viewed at the bottom of the FileZilla window: Queued files are waiting to transfer, Failed transfers were unsuccessful, and Successful transfers are complete.
+
+## Final Notes
+If you close the FileZilla window, your connection to the server will end. If you did not clear history of the Quickconnect bar, you can re-connect the next time you open the FileZilla client simply by opening the Quickconnect menu (accessed with the arrow next to the "Quickconnect" button) and selecting the saved Host name. Otherwise, you will need to retype the Host, username, and password information. 
+
+
+

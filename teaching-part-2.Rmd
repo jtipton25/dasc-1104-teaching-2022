@@ -1,0 +1,551 @@
+---
+title: "Teaching R in DASC 1104"
+subtitle: "R Part II"
+author: "John Tipton"
+institute: "The University of Arkansas"
+date: "2021/06/07 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false      
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+urlcolor: blue
+knit: pagedown::chrome_print
+---
+
+```{css, echo = FALSE}
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+# Learning R
+
+- [Introduction to tidy statistics](https://www.rstudio.com/resources/webinars/a-gentle-introduction-to-tidy-statistics-in-r/)
+
+- [RStudio primers](https://rstudio.cloud/learn/primers)
+
+- [Software carpentries](https://software-carpentry.org/lessons/index.html)
+
+    - [R for Reproducible Analyses](https://swcarpentry.github.io/r-novice-gapminder/)
+    
+    - [Programming with R](https://swcarpentry.github.io/r-novice-inflammation/)
+
+- [R for data science](https://r4ds.had.co.nz/)
+
+
+---
+
+
+# Materials 
+
+- Available on gitHub at [https://github.com/jtipton25/dasc-1104-teaching](https://github.com/jtipton25/dasc-1104-teaching)
+
+---
+
+# Course make file
+
+* In the loaded `dasc1104-teaching` project, the following command will generate all code
+
+
+```{r, eval = FALSE}
+# note: this will take a while, maybe 15-20 minutes
+source(here::here("make.R"))
+```
+
+# Lectures
+
+- unit_4_09_intro_R_Rmarkdown.Rmd
+
+- unit_4_R_10_intro_plotting.Rmd
+
+- unit_4_R_11_File_IO_and_basic_data_wrangling.Rmd
+
+- unit_4_R_12_Data_types_and_objects.Rmd
+
+- unit_4_R_13_Functional_programming.Rmd
+
+- unit_4_R_14_Intro_to_modeling.Rmd
+
+---
+
+## Brief recap of each unit
+
+---
+
+# Intro to R and Rmarkdown
+
+- Focus on reproducibility and workflow
+
+- Heavily inspired by [R for Reproducible Analyses](https://swcarpentry.github.io/r-novice-gapminder/)
+
+- Much of this was covered in part I
+
+---
+
+# Data visualization and plotting
+
+- Goal: to get students interested and excited when working with data
+
+    - Give enough background and language for students to seek out help online for data visualization
+    
+    - Emphasis on flexibility and exploration of data through visualization
+    
+    - Worked through a couple datasets to demonstrate how the visualization process works
+
+
+---
+
+# Data Visualization
+
+- Using `ggplot` and the `mtcars` data, generate a scatterplot of fuel milage (`mpg`) as a function of engine power (`hp`)
+
+- Explore how other variables in the `mtcars` dataset influence fuel milage
+
+---
+
+# File IO
+
+- Read the `game_goals.csv` file from the `data` folder with `read_csv()` (from the `tidyverse` library) and give this `data.frame` the name `dat`
+
+- Make sure you properly define the filepath
+
+- Many more specifics about reading files
+    - skipping lines
+    - defining column variable types
+    - different file delimiters
+    - missing values and `NA`s
+    - data comments
+
+---
+
+# Data manipulation
+
+## Most important `dplyr` (a part of the `tidyverse`) commands
+
+* Using pipes `%>%`
+
+* Choose observations (rows) based on conditional values with `filter()`
+
+* Reorder the variables with `arrange()`
+
+* Select variables by name with `select()`
+
+* Create new variables with `mutate()`
+
+* Create summary variables with `summarize()` 
+    * `summarise()` if you are British 
+    
+* Group variables with `group_by()`    
+    
+
+# Pipes
+
+> The itsy bitsy spider went up the water spout
+
+> Down came the rain and washed the spider out
+
+> Out came the sun and dried up all the rain
+
+> And the itsy bitsy spider went up the spout again
+
+* multiple variable names, likely to make a typo
+
+```
+itsy_bitsy_spider_1 <- went(itsy_bitsy_spider, up = "waterspout")
+itsy_bitsy_spider_2 <- rain_down(itsy_bitsy_spider_1, washed = "out")
+itsy_bitsy_spider_3 <- sun(itsy_bitsy_spider_2, dried = "rain")
+itsy_bitsy_spider_4 <- went(itsy_bitsy_spider_3, up = "spout again")
+```
+
+
+* overwriting the data, likely to make errors
+
+```
+itsy_bitsy_spider <- went(itsy_bitsy_spider, up = "waterspout")
+itsy_bitsy_spider <- rain_down(itsy_bitsy_spider, washed = "out")
+itsy_bitsy_spider <- sun(itsy_bitsy_spider, dried = "rain")
+itsy_bitsy_spider <- went(itsy_bitsy_spider, up = "spout again")
+```
+
+---
+
+# Pipes
+
+> The itsy bitsy spider went up the water spout
+
+> Down came the rain and washed the spider out
+
+> Out came the sun and dried up all the rain
+
+> And the itsy bitsy spider went up the spout again
+
+* hard to read
+
+```
+went(
+    sun(
+        rain_down(
+            went(itsy_bitsy_spider, up = "waterspout"),
+            washed = "out"),
+        dried = "rain"),
+    up = "spout again"
+)
+```
+
+* Much better
+
+```
+itsy_bitsy_spider %>%
+    went(up = "waterspout") %>%
+    rain_down(washed = "out) %>%
+    sun(dried = "rain") %>%
+    went(up = "spout again")
+```
+
+---
+
+# Pipes
+
+* How does the pipe work?
+
+```{r}
+x <- 1:10
+x %>%
+  mean()
+```
+
+is equivalent to 
+
+```{r}
+x %>%
+  mean(.)
+```
+
+where the `.` is a placeholder for the variable `x` which results in 
+
+```{r}
+mean(x)
+```
+
+
+
+---
+
+# Pipes
+
+* Pipes are not always the optimal choice
+
+* Try to avoid super long chains of pipes
+
+    * Instead: break up the pipe into intermediate objects
+
+* Pipes can't handle multiple inputs/outputs
+
+--
+
+* How to build a chain of pipes
+    
+    * Start by outlining a plan of attack
+    
+    * Write one small subset of the pipe chain at a time and verify the results
+
+
+* Challenge: Ask me questions about the `diamonds` data
+
+
+---
+
+# Data manipulation
+
+- Using the NHL goals dataset from before (named `dat`), `filter()` out all records where the `player` is `"Alex Ovechkin"` or `"Sidney Crosby"`. How many observations are there?
+
+- Using the NHL goals dataset, `arrange()` the observations in decreasing order (the `desc()` function) using the `penalty_min` variable. Who on the list has two games in the top 10 penalty minutes of the dataset?
+
+- Using the NHL dataset, `select()` the variables `player`, `shots`, and `goals`. Then, `mutate()` a new variable `shots_per_goal` by dividing the number of `shots` by the number of `goals`. Did you get any warnings/errors?
+
+- Using the NHL dataset, `summarize()` the total `goals` for each `player`. Using `arrange()`, who are the top 5 players in all time goals (in the data)?
+
+
+---
+
+# Relational data
+
+- Joining multiple datasets together
+
+- `left_join()`
+
+- `right_join()`
+
+- `inner_join()`
+
+- `outer_join()`
+
+
+---
+
+# Processing strings
+
+- Use the `stringr` package (part of the `tidyverse`)
+
+- Can use regular expressions
+
+```{r}
+(string1 <- "This is a string")
+(string2 <- 'This is also a string')
+(string3 <- 'This is a "quoted" string')
+``` 
+
+---
+
+# String processing
+
+- `str_length()`
+
+- `str_c()`
+
+- `str_sub()`
+
+- others
+
+---
+
+# Factors
+
+- Factors are an atomic type for categorical data
+
+    - By default, these are unordered
+    
+    - Ordered factors can be used (good - better - best)
+    
+- `factor()`
+
+- `levels()`
+
+- `fct_recode()`
+
+- `fct_order()`
+
+
+---
+
+
+# Dates (not covered)
+
+
+---
+
+# Functional programming (currently not covered, but should be)
+
+- Code is for **humans** not computers
+
+- Functions make code readable to humans
+
+
+---
+
+# Keep it DRY
+
+
+* Don't Repeat Yourself
+
+* If you copy and paste code 3 or more times, write a function
+
+* Generate some data 
+
+```{r}
+df <- data.frame(
+  x = rnorm(10), 
+  y = rnorm(10),
+  z = rnorm(10)
+)
+```
+
+* The above isn't DRY, but there is no chance of errors and the code is easy to understand
+
+---
+
+# DRY
+
+* Transform each variable to mean 0, standard deviation 1
+
+```{r}
+x_scaled <- (df$x - mean(df$x, na.rm = TRUE)) / sd(df$x, na.rm = TRUE)
+y_scaled <- (df$y - mean(df$y, na.rm = TRUE)) / sd(df$y, na.rm = TRUE)
+z_scaled <- (df$z - mean(df$z, na.rm = TRUE)) / sd(df$y, na.rm = TRUE)
+```
+    
+--
+
+* Can you spot the error?
+
+--
+
+```{r, eval = FALSE}
+z_scaled <- (df$z - mean(df$z, na.rm = TRUE)) / sd(`df$y`, na.rm = TRUE)
+```
+
+
+* write a function to do this
+
+```{r}
+rescale_variable <- function(x) {
+  mean_x <- mean(x, na.rm = TRUE)
+  sd_x   <- sd(x, na.rm = TRUE) 
+  ## save the variable for the output
+  out <- (x - mean_x) / sd_x
+  return(out)
+}
+```
+
+* Much less likely to make an error
+
+```{r}
+x_scaled <- rescale_variable(df$x)
+y_scaled <- rescale_variable(df$x)
+z_scaled <- rescale_variable(df$z)
+```
+
+    
+---
+
+# Naming Functions
+
+* Name functions for human readers!
+
+```{r, eval = FALSE}
+# bad name -- what does this do?
+f()
+
+# what does this do?
+func()
+
+# longer names -- use autocomplete
+fill_missing_values()
+pre_process_data()
+```
+
+* Don't name your functions over functions or variables which already exist!
+
+```{r, eval = FALSE}
+mean <- function(x) {}
+TRUE <- function(x, y) {}
+```
+
+---
+
+# Naming Functions
+
+* Pick a naming convention and stick with it (I prefer snake case)
+
+```{r}
+# snake case
+my_function_name <- function(x, y) {}
+# camel case
+myFunctionName <- function(x, y) {}
+```
+
+* Try to reuse leading names -- allows for autocomplete
+
+```{r, eval = FALSE}
+# better
+check_input()
+check_parameters()
+check_inits()
+
+# not as good
+input_check()
+parameters_check()
+inits_check()
+```
+
+---    
+
+# For loops
+
+- for loops in R
+
+```{r}
+value <- 0
+for (i in 1:100) {
+  value <- value + i
+}
+value
+```
+
+---
+
+# Writing functions
+
+- given a `data.frame`, calculate the mean of each column
+
+- write a function that returns the mean of each column
+
+
+---
+
+# The project
+
+- Idea: have each student construct a blog and perform a basic analysis using the skills learned in the class
+
+- Maybe next semester the project will be smaller in scope to cover more material
+
+- Have students use data to tell a story using summary statistics and data visualization
+
+---
+
+# Example projects
+
+
+- https://jdkincan.netlify.app/about/
+- https://arbeger-blog.netlify.app/
+- https://dasc-1104-alc.netlify.app/
+- https://dasc1104-blog-project.netlify.app/
+- https://tracef.netlify.app/
+- https://abbyharris.netlify.app/
+- https://akoster-dasc-1104-blog.netlify.app/
+- https://dasc-1104-bmarlow.netlify.app/
+- https://hpmcdona.netlify.app/
+- https://mrrice-dasc-1104-blog.netlify.app/
+- https://ntrogers.netlify.app/about/
+- https://nifty-wozniak-e3e1d9.netlify.app/about/
+- https://dasc-1104-calebwilliamsblog.netlify.app/about/
+- https://rjyates-dasc-blog.netlify.app/
+
+

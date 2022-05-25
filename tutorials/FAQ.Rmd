@@ -1,0 +1,250 @@
+---
+title: "Frequently Asked Questions"
+author: "Andrew Alverson and John Tipton"
+date: | 
+    | Created 8/31/2020
+    | Last modified 8/31/2020
+
+output: 
+  pdf_document:
+    number_sections: true
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+## default options for compiling the Rmarkdown document
+knitr::opts_chunk$set(
+  echo      = TRUE, 
+  tidy      = TRUE, 
+  fig.align = "center",
+  out.width = "70%"
+)
+knitr::opts_chunk$set(package.startup.message = FALSE)
+# library(openintro)
+```
+
+<!-- # FAQ week 1 -->
+
+# Make sure you read this document before sending me an email. These are the most common issues that arise during this course so there is a high likelhood that your issue will be here.
+
+
+# I can't connect to the server when I'm off home/coffee shop/anywhere not using UARK WIFI {#vpn}
+
+* Download and install the UARK VPN. If you are off campus, are you logged into the VPN? Double check
+    
+```{r, warning = FALSE}
+knitr::include_graphics(here::here("images", "FAQs", "vpn.png"))
+```
+
+# Server disconnected
+
+I keep getting the error message below. What gives?
+
+```{r, out.width = "70%", echo = FALSE, fig.align = "center"}
+knitr::include_graphics(here::here("images", "FAQs", "r-disconnected.png"))
+```
+
+The above message can arise for multiple reasons. The most common are 
+
+1) I, the instructor, have logged into your RStudio server account to either help you with a problem or to see what progress you have made. If you had an active connection and then get booted off a couple times in a row, I am likely working on your account.
+
+2) You have a poor internet connection and/or you are [not on the VPN](#vpn)
+
+3) There is an error on the server end. If this occurs for more than a few minutes and you are either on campus or logged into the VPN, send me an email
+
+
+# You get the error: `! LaTeX Error: File 'framed.sty' not found.`
+
+```{r, echo = FALSE, fig.align = "center", out.width = "70%"}
+knitr::include_graphics(here::here("images", "FAQs", "framed-error.png"))
+```
+
+- Make sure you have installed `tinytex` package and have installed `tinytex` by copying the code below and pasting it into the R console (lower left window)
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+- Finally, close your RStudio session and then start a new session
+
+- [More detailed instructions are available in this video](https://video.uark.edu/media/Installing+tinytex/0_1uq0t36z)
+
+
+<!-- # Have you tried restarting your session and running all code chunks upto where you are working? -->
+
+<!-- # FAQ Week 2 -->
+
+# I want to do *XXX* in Rmarkdown
+
+* [Rmarkdown list of commands](https://holtzy.github.io/Pimp-my-rmd/)
+
+* Google it
+
+<!-- # My Rmarkdown document won't knit -->
+
+<!-- 1) Make sure you have  -->
+<!--     1) created a project,  -->
+<!--     1) are in your active project,  -->
+<!--     1) all the files needed for the analysis are in you active project in their correct folders, -->
+<!--     1) and the Rmarkdown file you are actively editing is in your project directory -->
+
+<!-- 1) In the Rmarkdown popup window (lower left corner), double click on the Error message. This will take you to the location in the RMarkdown document where the computer *thinks* you have an error -->
+
+<!--     ```{r} -->
+<!--     knitr::include_graphics(here::here("images", "FAQs", "knit-error.png")) -->
+<!--     ``` -->
+
+<!-- 1) If the above issues are not causing the problem, make sure all of your code chunks are closed (all code chunks start with ```` ```{r} ```` and end in ```` ``` ````) -->
+
+
+<!-- # I get an error: -->
+
+<!-- ## blah blah blah blah ... `could not find the function %>%` -->
+
+<!-- ```{r, error = TRUE} -->
+<!-- ## need to subset into the sinusitus into the treatment category of the group variable -->
+<!-- sinusitis %>% -->
+<!--   subset(group == "treatment") -->
+<!-- ``` -->
+
+<!-- Oops, you forgot to load the tidyverse package (**As a note, you should add all packages to a code chunk at the top of your RMarkdown document**) I just have to add the library call here to get the error above -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- library(tidyverse) -->
+<!-- ``` -->
+
+<!-- **Note: when working in interactive mode (in the console) you need to make sure you load the library** -->
+
+
+<!-- ## blah blah blah blah ... `data set 'orings' not found`  -->
+
+<!-- ```{r, error = TRUE} -->
+<!-- data("orings") -->
+<!-- ``` -->
+
+
+<!-- Oops, you forgot to load the package that contains the data (in this example, it is the `openintro` package) (**As a note, you should add all packages to a code chunk at the top of your RMarkdown document**) I just have to add the library call here to get the error above -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- library(openintro) -->
+<!-- data("orings") -->
+<!-- ``` -->
+
+<!-- **Note: when working in interactive mode (in the console) you need to make sure you load the library** -->
+
+
+<!-- ## blah blah blah blah ... `object 'dat' not found`  -->
+
+<!-- ```{r, error = TRUE} -->
+<!-- dat %>% -->
+<!--   subset(temp > 70) -->
+<!-- ``` -->
+
+<!-- You have not defined an object in R named `dat`. If `dat` is a dataset, load it using `data("dat")`. If `dat` is a created object (i.e., the output of a function call), create the object dat. -->
+
+<!-- ```{r} -->
+<!-- dat <- orings %>% -->
+<!--   subset(damage == 1) -->
+<!-- ``` -->
+
+<!-- then you can use the object `dat`  -->
+
+<!-- ```{r} -->
+<!-- dat %>% -->
+<!--   subset(temp > 70) -->
+<!-- ``` -->
+
+<!-- ## I can't find the data/I can't load the package/etc. in the console -->
+
+<!-- If you are working interactively (in the console) pehaps you see something like this... -->
+
+<!-- ```{r, echo = FALSE, fig.align = "center", out.width = "50%"} -->
+<!-- knitr::include_graphics(here::here("images", "FAQs", "oringskms.png")) -->
+<!-- ``` -->
+
+<!-- The previous code wasn't loading the `orings` data because the `openintro` library has not been loaded using the `library(openintro)` -->
+
+<!-- The following code will produce an error because the `madeupdata` package doesn't actually exist. I use this example to show what the error message output will look like. -->
+
+<!-- ```{r, error = TRUE} -->
+<!-- # load the data pizzamustache from the madeupdata package -->
+<!-- library(madeupdata) -->
+<!-- ```     -->
+
+<!-- To install a missing package, say the `openintro` package, type -->
+
+<!-- ```{r, eval = FALSE} -->
+<!-- install.packages("openintro")     -->
+<!-- ``` -->
+
+<!-- If you are still having issues, you run **all code chunks above the current chunk**, (or, if you are working interactively -- not on the RMarkdown document -- make sure you run the line `library(openintro)` in he console) -->
+
+
+
+<!-- # How do make those annoying package loading messages go away -->
+
+<!-- If you don't like the output of the package loading messages shown below (**I don't**) -->
+
+<!-- ```{r, echo = FALSE} -->
+<!-- detach("package:openintro", unload=TRUE) -->
+<!-- ```  -->
+
+<!-- ```{r} -->
+<!-- library(openintro) -->
+<!-- ``` -->
+
+<!-- disable these by adding the option `message = FALSE` to the chunk that loads the libraries. -->
+
+
+
+<!-- ```` -->
+<!-- `r ''````{r, message = FALSE} -->
+<!-- library(openintro) -->
+<!-- ``` -->
+<!-- ```` -->
+
+
+<!-- # Formatting errors -->
+
+<!-- **Don't print output that runs for many pages -- I will take off points for very poor formatting/proofreading.** -->
+
+<!-- One option is to disable the output using the code chunk option `include = FALSE`. -->
+
+<!-- ```` -->
+<!-- `r ''````{r, include = FALSE} -->
+<!-- sinusitis %>% -->
+<!--   subset(group == "treatment") -->
+<!-- ``` -->
+<!-- ```` -->
+
+
+<!-- ```{r} -->
+<!-- sinusitis %>% -->
+<!--   subset(group == "treatment") -->
+<!-- ``` -->
+
+
+<!-- # FAQ week 3 -->
+
+<!-- * Code chunk alignment:  -->
+<!--     * indents are 4 spaces -->
+<!--     * pay attention to the highlighting -->
+<!--         * add in images here -->
+
+    
+
+<!-- ## FAQ week 4 -->
+
+
+<!-- * Mis-indented code chunks -->
+<!--     * What a mis-indented code chunk looks like based on code highlighting -->
+
+<!--     * Versus what a correctly formatted code chunk looks like on code highlighting. -->
+
+
+<!--     - add these -->
+
+
+    
+

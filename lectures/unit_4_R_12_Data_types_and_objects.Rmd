@@ -1,0 +1,1652 @@
+---
+title: "Data types and objects"
+author: "John Tipton"
+output:
+  xaringan::moon_reader:
+    self_contained: true    
+    lib_dir: libs
+    nature:
+      navigation:
+        scroll: false      
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+urlcolor: blue
+knit: pagedown::chrome_print
+---
+
+```{css, echo = FALSE}
+.remark-slide-content {
+  font-size: 18px;
+  padding: 20px 80px 20px 80px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 14px;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.very-large .remark-code { /*Change made here*/
+  font-size: 150% !important;
+}
+.large .remark-code { /*Change made here*/
+  font-size: 125% !important;
+}
+.small .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.very-small .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 40% !important;
+}
+```
+
+
+```{r setup, include = FALSE, cache = FALSE, message = FALSE}
+## set some knitr options
+library(knitr)
+library(here)
+# ## Figure settings, defaults to png files
+opts_chunk$set(fig.align='center', fig.width = 16/4,
+               fig.height = 9/4, fig.show = 'hold', par = TRUE,
+               dev='png', 
+               dpi=72*4, out.width = "80%")
+
+colorize <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s'>%s</span>", color,
+      x)
+  } else x
+}
+
+hl <- function(x) {
+  colorize(x, color = "corals2")
+}
+
+set.seed(111)
+```
+
+# Readings
+
+* R for data science 
+    * Introduction
+    * Chapters 10 (Relational data with `dplyr`), 11 (Strings with `stringr`), 12 (Factors with `forcats`), and 13 (Dates and times with `lubridate`)
+    
+    
+---
+
+# Relational data
+
+* Multiple tables of data where the relationships between the data matter
+
+* Common in SQL and other database software
+
+* Common operations include mutating joins, filtering joins, and set operations
+
+* Example: `nycflights13` relational data
+
+```{r, message = FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+---
+
+# Examine the data
+
+* The data sets include `airlines`, `airports`, `planes` and `weather`
+
+```{r, echo = FALSE, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("./img/relational-nycflights.png")
+```
+
+---
+
+# Relational data
+
+* The `weather` data is connected to `flights` data by the variables `year`, `month`, `day`, `hour`, and `origin`
+
+* The `planes` data is connected to the `flights` data by the `tailnum` variable
+
+* The `airports` data is connected to the `flights` data by the `faa` variable
+
+* The `airlines` data is connected to the `flights` data by the `carrier` variable
+
+---
+
+# Relational data
+
+* The variables that connect two or more data tables are called **keys**
+
+    * **primary keys** uniquely identifies an observation in its own table
+    
+    * **foreign keys** uniquely identifies an observation in another table
+
+* A quick check if a variable is a key is to count it
+
+```{r}
+planes %>%
+  count(tailnum) %>%
+  filter(n > 1)
+```
+
+* The `tailnum` variable never shows up more than once in the `planes` data.
+    
+    
+```{r}
+airlines %>% 
+  count(carrier) %>%
+  filter(n > 1)
+```
+
+* The `carrier` variable never shows up more than once in the `airlines` data
+
+---
+
+# Question: What is the key for `flights`?
+
+---
+
+# The `flights` key
+
+* There isn't a key
+
+```{r}
+flights %>%
+  count(flight) %>% ## the flight number gets reused
+  filter(n > 1)
+```
+
+---
+
+# The `flights` key
+
+* There isn't a key
+
+```{r, cache = TRUE}
+flights %>%
+  count(year, month, day, flight) %>% ## the flight number gets reused
+  filter(n > 1)
+```
+
+
+---
+
+# The `flights` key
+
+* There isn't a key
+
+```{r, cache = TRUE}
+flights %>%
+  count(year, month, day, flight, tailnum) %>% ## the flight number gets reused
+  filter(n > 1)
+```
+
+
+
+---
+
+# The `flights` key
+
+* If there isn't a key, you can make one (called a **surrogate key**)
+
+.small[
+```{r}
+flights %>%
+  mutate(row_number = row_number())
+```
+
+```{r, cache = TRUE}
+flights %>%
+  mutate(row_number = row_number()) %>%
+  count(row_number) %>%
+  filter(n > 1)
+```
+]
+
+
+---
+
+# Mutating joins
+
+* Combines variable from two data tables
+
+```{r}
+# create a smaller dataset from flights
+flights_smaller <- flights %>%
+  select(year:day, hour, origin)
+```
+    
+```{r}
+flights_smaller
+```
+
+---
+
+# Mutating joins
+
+* Combines variables from two data tables
+
+* Add variable columns to a dataset
+
+```{r, cache = TRUE}
+flights_smaller %>%
+  left_join(weather, by = c("year", "month", "day", "hour", "origin"))
+```
+
+* Weather data appended to the `flights_smaller` data
+
+---
+
+# Types of joins
+
+* Left join (join the two data sets keeping all variables in the left data set)
+
+* Right join (join the two data sets keeping all variables in the right data set)
+
+* Inner join (join the two data sets keeping all variables that are in both data sets)
+
+    * Typically this is poor as it drops missing values silently
+    
+    * Missing values are important to keep track of -- only drop missing values intentionally
+
+* Outer join (join the two data sets keeping all variables that are in either data set)
+
+---
+
+# Joins
+
+```{r, echo = FALSE, out.width = "35%", fig.align = "center"}
+knitr::include_graphics("./img/inner-join.png")
+```
+```{r, echo = FALSE, out.width = "35%", fig.align = "center"}
+knitr::include_graphics("./img/join-outer.png")
+```
+
+---
+
+# Example data
+
+
+.pull-left[
+```{r}
+dat_x <- tribble(
+  ~key, ~x,
+  1, "x1",
+  2, "x2",
+  3, "x3",
+  4, "x1",
+  5, "x2",
+  6, "x3",  
+)
+```
+]
+
+.pull-right[
+```{r}
+dat_y <- tribble(
+  ~key, ~y,
+  1, "y1",
+  2, "y2",
+  3, "y3",
+  4, "y1",
+  7, "y2",
+  8, "y3",  
+)
+```
+]
+
+---
+
+# Inner Join
+
+```{r}
+dat_x %>%
+  inner_join(dat_y, by = "key")
+```
+    
+* Notice that the variables with keys 5-8 have been dropped
+
+* Half of the data is now missing without any notice!
+
+---
+
+# Outer joins
+
+* Left joins
+
+    * Keeps all of the observations in the "left" dataset 
+
+```{r}
+dat_x %>%
+  left_join(dat_y, by = "key")
+```
+
+* Notice how all the observations in `dat_x` are kept
+
+---
+
+# Outer joins
+
+* Right joins
+
+    * Keeps all of the observations in the "right" dataset 
+
+```{r}
+dat_x %>%
+  right_join(dat_y, by = "key")
+```
+
+* Notice how all the observations in `dat_y` are kept
+    
+    
+---
+
+# Outer joins
+
+* Full joins
+
+    * Keeps all of the observations in both datasets
+
+```{r}
+dat_x %>%
+  full_join(dat_y, by = "key")
+```
+
+* Notice how all the observations in `dat_x` and `dat_y` are kept 
+
+---
+
+# Duplicate keys
+
+* Typically, there should not be duplicate keys, but this isn't always true
+
+
+
+.pull-left[
+```{r}
+dat_x <- tribble(
+  ~key, ~x,
+  1, "x1",
+  2, "x2",
+  3, "x3",
+  4, "x1",
+  1, "x2",
+  2, "x3",  
+)
+```
+]
+
+.pull-right[
+```{r}
+dat_y <- tribble(
+  ~key, ~y,
+  1, "y1",
+  2, "y2",
+  3, "y3",
+  5, "y5",
+)
+```
+]
+
+---
+
+# Left Joins with duplicate keys
+
+```{r}
+dat_x %>%
+  left_join(dat_y, by = "key")
+```
+    
+* Notice that we get all combinations (Cartesian product) of the variables keeping all observations in `dat_x`
+
+---
+
+# Outer joins
+
+* Right joins
+
+    * Keeps all of the observations in the "right" dataset 
+
+```{r}
+dat_x %>%
+  right_join(dat_y, by = "key")
+```
+
+* Notice how all the observations in `dat_y` are kept
+    
+    
+---
+
+# Outer joins
+
+* Full joins
+
+    * Keeps all of the observations in both datasets
+
+```{r}
+dat_x %>%
+  full_join(dat_y, by = "key")
+```
+
+* Notice how all the observations in `dat_x` and `dat_y` are kept 
+
+
+---
+
+# Defining the key
+
+* Most of the time, the key variable (or variables) are not given the name `key`
+
+* A natural join uses all of the variables in the two dataframes that are in common
+
+```{r}
+flights_reduced <- flights %>% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+flights_reduced
+```
+
+---
+
+# Natural join
+
+* What are the key variables used here?
+
+```{r}
+flights_reduced %>%
+  left_join(weather)
+```
+
+* Uses the variables in common between the datasets
+---
+
+# Natural join
+
+```{r}
+colnames(flights_reduced)
+```
+
+```{r}
+colnames(weather)
+```
+
+
+* What variable names are in common
+
+```{r}
+intersect(colnames(flights_reduced), colnames(weather))
+```
+
+
+---
+
+# Joining with keys
+
+* left join `flights_reduced` and `planes`
+
+* Notice the output of the `years` variables
+
+```{r}
+flights_reduced %>%
+  left_join(planes, by = "tailnum")
+```
+
+---
+
+# Joining with keys
+
+* right join `flights_reduced` and `planes`
+
+* Notice the output of the `years` variables
+
+```{r}
+flights_reduced %>%
+  right_join(planes, by = "tailnum")
+```
+
+---
+
+# Joining with keys with different names
+
+* `flights_reduced` has variable `dest`, `airports` has the variable `faa`
+
+* left join `flights_reduced` (`dest` variable) and `airports` (`faa` variable)
+
+```{r}
+flights_reduced %>%
+  left_join(airports, by = c("dest" = "faa"))
+```
+
+
+---
+
+# Filtering joins
+
+* Filter joins drop observations that are missing (typically not used much)
+
+* `semi_join(x, y)` keeps all observations in `x` that have a match in `y` 
+    * Drops all observations in `x` that don't have a match in `y`
+    * Does not duplicate observations (no Cartesian products)
+
+* `anti_join(x, y)` drops all observations in `x` that have a match in `y`
+    * useful for diagnosing join errors
+
+---
+
+# Working with joins
+
+* Identifying keys
+     * Use your knowledge of the data
+     * Trying to identify keys based on the data values can lead to red herrings
+     
+
+---
+
+# Strings
+
+```{r}
+string1 <- "This is a string"
+string2 <- 'This is also a string'
+string3 <- 'This is a "quoted" string'
+```
+
+```{r}
+string1
+string2
+string3
+```
+
+---
+
+# Strings - Escape characters
+
+* The escape character for strings is `\`
+
+* Note: printed strings show the escape characters, not the string
+
+```{r}
+print(string3)
+```
+
+* To show the actual string, use `writelines`
+
+```{r}
+writeLines(string3)
+```
+
+* Other special characters include `\n`, `\t`
+
+---
+
+# Strings 
+
+* Join strings into a vector using `c()`
+
+```{r}
+c(string1, string2, string3)
+```
+
+* String length (number of characters) using `str_length()`
+
+```{r}
+str_length(c(string1, string2, string3, NA))
+```
+
+* Join strings together using `str_c()`
+
+```{r}
+str_c(string1, string2, string3)
+```
+
+* Join strings with a separator character
+
+```{r}
+str_c(string1, string2, sep = "\n")
+```
+
+---
+
+# Strings
+
+* Missing values (`NA`) are contagious
+
+* The `str_c()` function (like most R functions) are vectorized
+
+```{r}
+str_c("abc", c("var", NA), "def", sep = "-")
+```
+
+* Collapse a vector of strings using `collapse`
+
+```{r}
+str_c(c("abc", "def", "ghi"), collapse = ", ")
+```
+
+---
+
+# Subsetting strings
+
+* Subset strings using `str_sub()`
+
+```{r}
+beatles <- c("John", "Paul", "Ringo", "George")
+# select the 1st through 3rd characters, inclusive
+str_sub(beatles, 1, 3)
+```
+
+```{r}
+# select the last through 3rd from last characters, inclusive
+str_sub(beatles, -3, -1)
+```
+
+* Convert string to lower case
+
+```{r}
+str_to_lower(beatles)
+```
+
+* Can use subsetting in assignment
+
+```{r}
+str_sub(beatles, 1, 1) <- str_to_lower(str_sub(beatles, 1, 1))
+beatles
+```
+
+---
+
+# Sting manipulation 
+
+.pull-left[
+
+* `str_to_lower()`
+
+```{r}
+str_to_lower(beatles)
+```
+
+* `str_to_upper()`
+
+```{r}
+str_to_upper(beatles)
+```
+
+* `str_to_title()`
+
+```{r}
+str_to_title(beatles)
+```
+]
+
+.pull-right[
+
+* `str_sort()`
+
+```{r}
+str_sort(beatles)
+```
+
+* `str_order()`
+
+```{r}
+str_order(beatles)
+```
+
+]
+
+
+---
+
+# Strings and searching
+
+* To help troubleshoot string searches, the functions `str_view()` and `str_view_all()` are useful
+
+```{r}
+costumes <- c("skeleton", "zombie", "witch", "ghoul", "ghost", "ghastly ghoul", "post man")
+str_view(costumes, "gh")
+```
+
+---
+
+# Strings and searching
+
+.pull-left[ 
+```{r}
+str_view(costumes, "e")
+```
+]
+
+.pull-right[
+```{r}
+str_view_all(costumes, "e")
+```
+]
+
+---
+
+# Regular expressions
+
+* The `.` character matches any character (except `\n`)
+
+```{r}
+str_view(costumes, ".h.")
+```
+
+---
+
+# Regular expressions
+
+* How do you search for a `.`?
+
+--
+
+    * Remember `\` is an escape character
+
+--
+    * To create the regular expression `\.`, you need to escape the escape `\`
+
+--
+    * To search for a `.`, you need the expression `\\.`
+    
+```{r}
+dot <- "\\."
+writeLines(dot)
+
+str_view(c("a.c", "d.f", "ghi"), "\\.")
+```
+
+---
+
+# Regular expressions
+
+* How do you search for a `\`?
+
+--
+    * `\\\\`
+
+* Search at the beginning of a string with `^`
+
+* Search at the end of a string with `$`
+
+.pull-left[
+```{r}
+str_view(costumes, "^gho")
+```
+]
+
+.pull-right[
+```{r}
+str_view(costumes, "ost$")
+```
+]
+
+
+---
+
+# Regular expressions
+
+* Character classes
+
+    * `\d` - digit
+    * `\s` - whitespace
+    * `\S` - non-whitespace
+    * `[abc]` - matches a, b, or c
+    * `[^abc]` - matches everything except a, b, or c
+
+* Recall: `\` is an escape so you need to match `\\d` or `\\s` or `\\S`
+
+* Repetition
+
+    * `?` - zero or one
+    * `+` - one or more
+    * `*` - zero or more
+    * `{n}` - exactly n matches
+    * `{n, }` - n or more matches
+    * `{, n}` - no more than n matches
+    * `{n, m}` - between n and m matches    
+    
+* Groupings
+
+    * `(abc)` searches for the string "abc
+
+---
+
+# String detection
+
+* Detect whether a string matches a pattern with `str_detect()`
+
+```{r}
+str_detect(costumes, "gh")
+```
+
+* How many words in the `stringr` library dataset `words` contain `ie` after a `c`?
+
+```{r}
+sum(str_detect(words, "cie"))
+```
+
+* What proportion of words in `words` begin with a `ch` or a `th`?
+
+```{r}
+mean(str_detect(words, "(^ch)|(^th)"))
+```
+
+---
+
+# String detection
+
+* What are some of the words that begin with a `ch` or a `th`?
+
+```{r}
+# display 5 of these words at random
+sample(words[str_detect(words, "(^ch)|(^th)")], 5)
+```
+
+
+* Using `str_subset()`
+
+```{r}
+# display 5 of these words at random
+sample(str_subset(words, "(^ch)|(^th)"), 5)
+```
+
+---
+
+# String detection
+
+* Using `str_detect()` within a data.frame to select words starting with "ch" or "th"
+
+```{r}
+df <- tibble(word = words, i = seq_along(word))
+df %>% 
+  filter(str_detect(word, "(^ch)|(^th)"))
+```
+
+
+---
+
+# String counting
+
+* Count the number of matches using `str_count()`
+
+* Count the number of vowels and consonants in each word
+
+--
+
+```{r}
+df %>%
+  mutate(
+    vowels = str_count(word, "[aeiou]"),
+    consonants = str_count(word, "[^aeiou]")
+  )
+```
+
+---
+
+# Strings examples
+
+* Use the Trump speech data
+
+* A subset of [speeches at Trump rallies](https://www.kaggle.com/christianlillelund/donald-trumps-rallies)
+
+<!-- Example analyses: https://www.kaggle.com/datasciencecat/what-does-trump-talk-about -->
+
+```{r}
+file_path <- here::here("data", "Trump_rallies")
+all_files <- list.files(file_path, pattern = ".txt")
+
+dat <- list()
+
+for (i in 1:length(all_files)) {
+  dat[[i]] <- read_file(paste(file_path, all_files[i], sep = "/"))
+}
+
+str_sub(dat[[1]], 1, 200)
+```
+
+
+---
+
+# String splitting
+
+* Use `str_split()` to split the speech into sentences
+
+```{r}
+trump_sentences <- unlist(str_split(dat[[1]], "(\\.\\s)|(\\?\\s)"))
+head(trump_sentences)
+```
+
+* Use the `boundary()` function to split on line breaks, sentences, words, or characters
+
+```{r}
+trump_sentences <- unlist(str_split(dat[[1]], boundary("sentence")))
+```
+
+* View the words in the first three sentences
+
+```{r}
+str_view_all(trump_sentences[1:3], boundary("word"))
+```
+
+
+---
+
+# Extracting matches
+
+* How many sentences contain "Michigan"?
+
+```{r}
+has_michigan <- str_subset(trump_sentences, "Michigan")
+michigan_mentions <- str_match(has_michigan, "Michigan")
+head(michigan_mentions)
+```
+
+---
+
+# Extracting matches
+
+* How many sentences contain "because", "Thank", or "you"?
+
+```{r}
+words_to_find <- c("because", "Thank", "thank", "you")
+words_match <- str_c(words_to_find, collapse = "|")
+has_words <- str_subset(trump_sentences, words_match)
+mentions <- str_match(has_words, words_match)
+head(mentions)
+```
+
+* Note: this only returns the first match
+
+
+---
+
+# Extracting matches
+
+* How to view all the matches?
+
+```{r}
+has_words <- str_subset(trump_sentences, words_match)
+str_view_all(head(has_words), words_match)
+```
+
+---
+
+# Extracting matches
+
+* Extract all matches with `str_match_all()`
+
+.small[
+```{r}
+head(str_match(has_words, words_match))
+head(str_match_all(has_words, words_match))
+```
+]
+
+---
+
+# Extracting matches
+
+* Format results in a matrix rather than a list
+
+```{r}
+head(str_extract_all(has_words, words_match, simplify = TRUE))
+```
+
+
+
+---
+
+# Grouped matches
+
+* Define a noun as a word that comes after an "a" or a "the"
+
+```{r}
+noun <- "(a|the) ([^ ]+)"
+has_noun <- str_subset(trump_sentences, noun)
+head(has_noun)
+```
+
+* Doesn't do too great for nouns but seems ok
+
+```{r}
+has_noun %>%
+str_extract(noun) %>%
+  head()
+```
+
+
+---
+
+# Grouped matches
+
+* `str_extract()` gives complete match, `str_match()` gives the individual groups
+
+```{r}
+has_noun %>%
+str_extract(noun) %>%
+  head()
+```
+
+```{r}
+has_noun %>%
+str_match(noun) %>%
+  head()
+```
+
+
+---
+
+# Replacing matches
+
+* Replace matches with `str_replace()` (only replace first instance) and `str_replace_all()`
+
+* Replace Trump speeches vowels with "%"
+
+```{r}
+head(str_replace(trump_sentences, "[aeiou]", "%"))
+```
+
+
+```{r}
+trump_sentences %>%
+  str_replace_all("[aeiou]", "%") %>%
+  head()
+```
+
+
+
+
+---
+
+# Replacing matches
+
+* Replace multiple matches with `str_replace_all()`
+
+```{r}
+trump_sentences %>%
+  str_replace_all(c("you" = "me", "Pence" = "%%%")) %>%
+  head()
+```
+
+---
+
+# Locate strings
+
+* Locate where the strings are with `str_locate()` and `str_locate_all()`
+
+* 
+```{r}
+head(str_locate(trump_sentences, "Thank"))
+```
+
+
+---
+
+# Factors
+
+* A factor is a "qualitative" variable that is encoded with a "numeric" value
+
+* Types of factors
+    * nominal (order doesn't matter) -- colors, religion, etc.
+    * ordinal (order matters) -- low/medium/high, young/middle aged/old
+    
+--
+    
+```{r}
+names <- c("Joe", "Frank", "Prudence", "Cora")
+ages <- c("young", "middle aged", "old", "young")
+sort(ages)
+```
+    
+* Sorted alphabetically, not by age
+
+```{r}
+age_levels <- c("young", "middle aged", "old")
+ages_factor <- factor(ages, levels = age_levels)
+sort(ages_factor)
+```
+
+* much better as a factor
+
+---
+
+# Factors
+
+* Be careful of typos    
+--
+    
+```{r}
+names <- c("Joe", "Frank", "Prudence", "Cora")
+ages <- c("young", "middle aged", "old", "youngs")
+sort(ages)
+```
+    
+* Sorted alphabetically, not by age
+
+```{r}
+age_levels <- c("young", "middle aged", "old")
+ages_factor <- factor(ages, levels = age_levels)
+ages_factor
+```
+
+* Notice the NA value was created without a warning
+
+---
+
+# Working with characters
+
+```{r}
+library(openintro)
+data("yrbss")
+# ?yrbss
+yrbss
+```
+
+* count the different `race` variables
+
+```{r}
+yrbss %>%
+  count(race)
+```
+
+---
+
+# Working with characters
+
+```{r}
+yrbss %>%
+  ggplot(aes(race)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+    
+    
+---
+
+# Working with Factors
+
+```{r}
+## change race to a factor
+yrbss$race <- factor(yrbss$race)
+```
+
+* count the different `race` variables
+
+```{r}
+yrbss %>%
+  count(race)
+```
+
+---
+
+# Working with Factors
+
+* Names are too long
+
+```{r}
+yrbss %>%
+  ggplot(aes(race)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+
+
+---
+
+# Working with Factors
+
+* rename factors with `fct_recode()`
+
+```{r}
+yrbss$race <- fct_recode(
+  yrbss$race,
+  Am.Ind. = "American Indian or Alaska Native",
+  Asian   = "Asian",                                    
+  Black   = "Black or African American",
+  Pac.Isl = "Native Hawaiian or Other Pacific Islander",
+  White   = "White"
+)
+```
+
+---
+
+# Working with Factors
+
+* Better figure
+
+```{r}
+yrbss %>%
+  ggplot(aes(race)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+
+
+---
+
+# Working with Factors
+
+* reorder based on count using `fct_reorder`
+
+```{r}
+yrbss %>%
+  count(race) %>%
+  ggplot(aes(x = fct_reorder(race, n), y = n)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+
+---
+# Working with Factors
+
+* reorder based on count using `fct_reorder`
+
+```{r, out.width = "60%"}
+yrbss %>%
+  group_by(race) %>%
+  summarize(
+    active = mean(physically_active_7d, na.rm = TRUE), 
+    age    =  mean(age, na.rm = TRUE),
+    n      = n()
+  ) %>%
+  ggplot(aes(x = fct_reorder(race, active), y = active)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+    
+    
+    
+---
+
+# Working with Factors
+
+* reorder based on count using `fct_reorder` -- doesn't make sense here
+
+```{r, out.width = "60%"}
+yrbss %>%
+  group_by(grade) %>%
+  summarize(
+    active = mean(physically_active_7d, na.rm = TRUE), 
+    age    =  mean(age, na.rm = TRUE),
+    n      = n()
+  ) %>%
+  ggplot(aes(x = fct_reorder(grade, age), y = age)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle =- 45, hjust = 0))
+```
+    
+    
+        
+        
+---
+
+# Working with Factors
+
+* `gss_cat` data in `forcats` package
+
+```{r}
+gss_cat
+```
+
+        
+---
+
+# Working with Factors
+
+* Recode multiple variables
+
+```{r}
+gss_cat %>%
+  count(partyid)
+```
+
+---
+
+# Working with Factors
+
+* Recode multiple variables at one time with `fct_collapse()`
+
+```{r}
+gss_cat %>%
+  mutate(partyid = fct_collapse(
+    partyid,
+    other = c("No answer", "Don't know", "Other party"),
+    rep = c("Strong republican", "Not str republican"),
+    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    dem = c("Not str democrat", "Strong democrat")
+  )) %>%
+  count(partyid)
+```
+
+
+---
+
+# Dates and times
+
+* dates and times can be really complicated (`lubridate` package)
+
+* many different computer formats (POSIXct is really common)
+
+```{r}
+library(lubridate)
+today()
+now()
+```
+
+* How many seconds in a day? In a year?
+
+* What about leap years? Time zones?
+
+---
+
+# Dates and times
+
+<center> ![mind+blown](img/mind+blown_SJX3gbZ2dbaEhU92Pu.gif) 
+
+---
+
+# Dates from strings
+
+* Helpful functions: `ymd()`, `ymd()`, `myd()`, `mdy()`, `dym()`, and `dmy()` for year, month, and day
+
+```{r}
+ymd("2020-10-31")
+mdy("October 31st, 2020")
+```
+
+* Can add in time with `_hms()` functions
+
+```{r}
+# 6 PM on halloween
+ymd_h("2020-10-31 18")
+# Right before midnight
+ymd_hms("2020-10-31 11:59:59")
+```
+
+---
+
+# Dates
+
+* Process dates with `make_date()` 
+
+```{r}
+dat <- data.frame(
+  year = c(2012, 2012, 2013, 2013, 2013, 2014, 2016),
+  month = c(5, 6, 11, 4, 1, 10, 9),
+  day = c(11, 22, 13, 30, 9, 5, 16),
+  hour = c(2, 16, 9, 22, 4, 15, 17)
+)
+```
+
+```{r}
+dat %>%
+  mutate(date = make_date(year, month, day))
+```
+
+
+---
+
+# Dates
+
+* Process dates with `make_datetime()`
+
+```{r}
+dat <- data.frame(
+  year = c(2012, 2012, 2013, 2013, 2013, 2014, 2016),
+  month = c(5, 6, 11, 4, 1, 10, 9),
+  day = c(11, 22, 13, 30, 9, 5, 16),
+  hour = c(2, 16, 9, 22, 4, 15, 17),
+  minute = c(13, 24, 25, 33, 14, 53, 37),
+  second = c(36, 5, 19, 4, 34, 43, 18)
+)
+```
+
+```{r}
+dat_dt <- dat %>%
+  mutate(datetime = make_datetime(year, month, day, hour, minute, second))
+dat_dt
+```
+
+---
+
+# Converting between dates and date-times
+
+```{r}
+today()
+as_datetime(today())
+```
+
+
+```{r}
+now()
+as_date(now())
+```
+
+
+---
+
+# Dates: Extracting components
+
+* `year()`
+
+* `month()`
+
+* `mday()` (day of the month)
+
+* `yday()` (day of the year)
+
+* `wday()` (day of the week)
+
+* `hour()`
+
+* `minute()`
+
+* `second()`
+
+---
+
+# Dates: Extracting components
+
+```{r}
+year(dat_dt$datetime) 
+```
+
+```{r}
+mday(dat_dt$datetime)
+```
+
+```{r}
+yday(dat_dt$datetime)
+```
+
+```{r}
+wday(dat_dt$datetime)
+```
+
+```{r}
+wday(dat_dt$datetime, label = TRUE)
+```
+
+
+
+---
+
+# Dates
+
+* rounding of dates with `floor_date()`, `round_date()`, and `ceiling_date()`
+
+.pull-left[
+.very-small[
+```{r}
+dat_dt %>%
+  select(datetime) %>%
+  mutate(week_date = floor_date(datetime, "week"))
+```
+
+```{r}
+dat_dt %>%
+  select(datetime) %>%
+  mutate(month_date = floor_date(datetime, "month"))
+```
+]
+]
+
+.pull-right[
+.very-small[
+```{r}
+dat_dt %>%
+  select(datetime) %>%
+  mutate(week_date = ceiling_date(datetime, "week"))
+```
+
+```{r}
+dat_dt %>%
+  select(datetime) %>%
+  mutate(month_date = ceiling_date(datetime, "month"))
+```
+]
+]
+
+
+---
+
+# Time spans
+
+* durations 
+
+```{r}
+# how long since the Big Lebowski was released?
+dude_abiding <- today() - ymd("1998-03-06")
+dude_abiding
+str(dude_abiding)
+as.duration(dude_abiding)
+```
+
+
+---
+
+# Time spans
+
+* duration constructors: `dseconds()`, `dminutes()`, `dhours()`, `ddays()`, `dweeks()`, and `dyears()`
+
+```{r}
+ddays(3)
+dyears(1)
+```
+
+* durations can give strange results
+
+```{r}
+# Why still in 2016?
+ymd_hms("2016-01-01 01:00:00") + dyears(1)
+```
+
+```{r}
+# Why did the time change?
+ymd_hms("2020-03-08 01:00:00", tz = "America/Chicago") + ddays(1)
+```
+
+---
+
+# Time periods
+
+* periods are human-defined terms like weeks and months
+
+* periods can be constructed with: `seconds()`, `minutes()`, `hours()`, `days()`, `weeks()`, and `years()`
+
+```{r}
+# Now in 2017
+ymd_hms("2016-01-01 01:00:00") + years(1)
+```
+
+```{r}
+# Time didn't change
+ymd_hms("2020-03-08 01:00:00", tz = "America/Chicago") + days(1)
+```
+
+
+---
+
+# Intervals
+
+
+* What should the result of `dyears(1) / ddays(365)` be?
+
+--
+
+.small[
+```{r}
+dyears(1) / ddays(365)
+```
+]
+
+* What should the result of `years(1) / days(1)` be?
+
+--
+
+.small[
+```{r}
+years(1) / days(1)
+```
+]
+
+* Could change based on the year!
+
+--
+
+.small[
+```{r}
+next_year <- today() + years(1)
+(today() %--% next_year) ## define a date interval
+(today() %--% next_year) / days(1)
+(today() %--% next_year) / ddays(1)
+```
+]
+
+---
+
+# Time zones
+
+* Time zones are really complex
+
+* Time zones are typically tied to cities
+
+* Get your timzone with `Sys.timezone()`
+
+* Default timezone is UTC
+
+* Get timezones with `OlsonNames()`
+
+```{r}
+head(OlsonNames())
+```
+
+
+---
+
+# Time zones
+
+```{r}
+x <- ymd_hms("2020-10-31 19:00:00", tz = "America/Denver")
+y <- ymd_hms("2020-10-31 20:00:00", tz = "America/Chicago")
+z <- ymd_hms("2020-10-31 21:00:00", tz = "America/New_York")
+```
+
+```{r}
+x - y
+x - z
+```
+
+```{r}
+times <- c(x, y, z)
+times
+with_tz(times, tzone = "America/Los_Angeles")
+```
+

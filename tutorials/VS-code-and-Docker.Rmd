@@ -1,0 +1,41 @@
+---
+title: "VS Code and Docker"
+author: "Andrew Alverson and John Tipton"
+date: |
+    | Created: 9/28/2020
+    | Last modified: 9/28/2020
+output:
+  html_document:
+    number_sections: yes
+  pdf_document: default
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+## default options for compiling the Rmarkdown document
+knitr::opts_chunk$set(
+  echo      = TRUE, 
+  tidy      = TRUE, 
+  fig.align = "center",
+  out.width = "100%"
+)
+knitr::opts_chunk$set(package.startup.message = FALSE)
+```
+
+# Install Docker
+
+Download and install [Docker Desktop](https://www.docker.com/get-started)
+
+* Right-click on the Docker task bar item, select Settings / Preferences and update Resources > File Sharing with any locations your source code is kept.
+
+* Set up file line endings (see relevant document -- End of File VS Code Windows and combine these documents here)
+
+
+# Setting up VS Code with Docker
+
+* [Instructions here](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-an-existing-folder-in-a-container)
+
+    * modify for python
+    * generate screenshots and include
+
+

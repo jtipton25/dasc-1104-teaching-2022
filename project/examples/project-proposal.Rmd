@@ -1,0 +1,711 @@
+---
+title: "DASC 1104 Example Project Proposal"
+author: "John Tipton"
+output:
+  pdf_document:
+    number_sections: yes
+  html_document:
+    df_print: paged
+urlcolor: blue
+---
+
+# My blog link
+
+My blog is available at [https://dasc-1104-blog.netlify.app](https://dasc-1104-blog.netlify.app).
+
+```{r setup, include = TRUE, message = FALSE, tidy = TRUE}
+library(here)
+library(ggplot2)
+library(tidyverse)
+library(readxl)
+knitr::opts_chunk$set(echo = FALSE, tidy = TRUE)
+dat1 <- read.csv(here::here("data", "tidytuesday", "data", "2018", "2018-11-13", "malaria_deaths.csv"))
+dat2 <- read.csv(here::here("data", "tidytuesday", "data", "2018", "2018-11-13", "malaria_deaths_age.csv"))
+dat3 <- read.csv(here::here("data", "tidytuesday", "data", "2018", "2018-11-13", "malaria_inc.csv"))
+
+## rename deaths from malaria per 100K
+dat1 <- rename(dat1, deaths_per_100K = Deaths...Malaria...Sex..Both...Age..Age.standardized..Rate...per.100.000.people.)
+
+## rename the incidence of malaria per 1000 population at risk
+dat3 <- rename(dat3, incidence_per_1000_at_risk = Incidence.of.malaria..per.1.000.population.at.risk...per.1.000.population.at.risk.)
+```
+
+Explore the data -- show this for the proposal but not the final report!
+
+```{r, echo = TRUE}
+glimpse(dat1)
+```
+
+```{r, echo = TRUE}
+glimpse(dat2)
+```
+
+```{r, echo = TRUE}
+glimpse(dat3)
+```
+
+# Malaria deaths
+
+For this project, I am examining the malaria deaths by age dataset contained in the `malaria_deaths_age.csv` file on the Tidy Tuesday website. The data consists of `r nrow(dat2)` observations of `r ncol(dat2)-1` variables. The variable `entity` is a factor with 228 levels that represents the region for the deaths. The variable `code` is a factor with 196 levels which represents a three letter code for the country/region. The variable `year` is a discrete integer variable that records the years between `r min(dat2$year)` and `r max(dat2$year)`. The variable `age_group` is a discrete ordered factor with 5 levels that groups the population into age groups under 5, 5-14, 15-49, 50-69 and 70 or older. The variable `deaths` records the number of deaths from malaria for each region, year, and age group.  Initial exploration shows that the largest variability in the number of deaths occurs across age groups with the largest number of deaths occurring in children under 5. Other variability in deaths occurs when examining death rates by region.
+
+The second dataset we use to understand malaria is the incidence rate of malaria given in the `malaria_inc.csv` file on the Tidy Tuesday website. The malaria incidence rate is the average number of people who contract malaria per 1000 people at risk. The malaria incidence dataset has 508 observations of 4 variables: the variable `Entity`, which is a factor with 127 levels, that represents the region for the malaria cases, the variable `Code`, which is a factor with 101 levels, that represents a three letter code for the country/region, the variable `year`, which is a discrete integer variable that records the years between `r min(dat3$Year)` and `r max(dat3$Year)` in an interval of 5 years, and the variable `Incidence` which records the number of malaria cases per 1000 people at risk.
+
+
+<!-- Using these two datasets, I will explore the following questions. First, is there a significant difference in malaria deaths by age group. If so, which groups are different. Second, is there a significant difference in deaths of malaria between regions with different socio-economic status? Third, how has the death rate from malaria changed over time? Fourth, has the incidence of malaria changed over time? -->
+
+<!-- ```{r, echo = FALSE} -->
+<!-- regions <- c("Australasia", "Central Asia", "Central Europe", "Central Latin America", "Central Sub-Saharan Africa", "East Asia", "Eastern Europe", "Eastern Sub-Saharan Africa", "Latin America and Carribean", "North Africa and Middle East", "North America", "Oceania", "South Asia", "Southeast Asia", "Southern Latin America", "Southern Sub-Saharan Africa", "Sub-Saharan Africa", "Tropical Latin America", "Western Europe", "Western Sub-Saharan Africa") -->
+<!-- ``` -->
+
+<!-- ```{r, echo - FALSE} -->
+<!-- ses <- c("High SDI", "High-middle SDI", "High-income Asia Pacific", "Low SDI", "Low-middle SDI", "Middle SDI") -->
+<!-- ``` -->
+
+<!-- ```{r, echo = FALSE, include = FALSE} -->
+<!-- by(data = dat2$deaths, dat2$age_group, mean) -->
+<!-- ``` -->
+
+
+
+<!-- ## Exploratory Data analysis -->
+
+<!-- First, we explore the global patterns in malaria deaths and incidence using the `World` factor in the `entity` variable. -->
+
+- Question 1: First, is there a significant difference in malaria deaths by age group. If so, which groups are different. To test this, I will generate different data visualizations (likely boxplots) as well as calculate group-level statistics like means, medians, and standard deviations.
+
+- Question 2: Second, how has the death rate from malaria changed over time? To investigate this, I will generate data visualizations of the death rate over time. In the visualization I will add model smooths and explore facets and groupings of other variables to see if the time trends vary with other variables. 
+
+- Question 3: Third, has the incidence of malaria per 100K people at risk changed over time? First, I will mutate the data to calculate the incidence rate per 100K. Then, I will produce visualizations of the incidence over time while exploring other grouping variables and facetes. 
+- Question 4: To be determined.
+
+<!-- ```{r, fig.cap="Plot of global deaths from malaria by age group and year"} -->
+<!-- ggplot(data = subset(dat2, entity == "World"), aes(x = year, y = deaths, color = age_group)) + -->
+<!--   geom_line() + -->
+<!--   ggtitle("Deaths from malaria by age group") -->
+<!-- ``` -->
+
+<!-- ```{r, fig.cap="Plot of global malaria incidence by year"} -->
+<!-- ggplot(data = subset(dat3, Entity == "World"), aes(x = Year, y = incidence_per_1000_at_risk)) + -->
+<!--   geom_line() + -->
+<!--   ylim(c(0, 200)) + -->
+<!--   ggtitle("Deaths from malaria by age group") -->
+<!-- ``` -->
+
+<!-- ```{r, fig.cap = "Plot of global malaria incidence by year"} -->
+<!-- regions_inc <- c("East Asia & Pacific",  -->
+<!--                  "Fragile and conflicted affected situations", -->
+<!--                  "Latin America & Carribean",  -->
+<!--                  "Least developed countries: UN classification",  -->
+<!--                  "South Asia",  -->
+<!--                  "Sub-Saharan Africa") -->
+
+<!-- ggplot(data = subset(dat3, Entity %in% regions_inc), -->
+<!--        aes(x = Year, y = incidence_per_1000_at_risk, group = Entity, color = Entity)) + -->
+<!--   geom_line() + -->
+<!--   # ylim(c(0, 200)) + -->
+<!--   ggtitle("Malaria incidence by region over year") -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+<!-- fit <- aov(deaths ~ age_group, data = subset(dat2, entity = "World")) -->
+<!-- summary(fit) -->
+<!-- TukeyHSD(fit) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- ggplot(data = dat2, aes(x = year, y = deaths, color = age_group)) + geom_point() -->
+<!-- ``` -->
+
+
+
+<!-- ```{r} -->
+<!-- ggplot(data = dat3, aes(x = Year, y = incidence_per_1000_at_risk)) + -->
+<!--   geom_point() +  -->
+<!--   stat_smooth(method = "lm") -->
+<!-- ``` -->
+
+# Covid-19 data analysis
+
+```{r, echo = TRUE}
+dat_full <- read.csv(file = here::here("data", "covid-data", "us-states.csv"))
+
+dat_pop <- read.csv(file = here::here("data", "covid-data", "nst-est2019-alldata.csv"))
+```
+
+
+```{r, echo = TRUE}
+glimpse(dat_full)
+```
+
+```{r, echo = TRUE}
+## there are 151 variables -- not printing them all for this proposal
+# glimpse(dat_pop)
+```
+
+## Data
+
+Using [data available on GitHub from the NY Times](https://github.com/nytimes/covid-19-data), I am going to investigate the ongoing Covid-19 pandemic in the United States. The variables in the Covid-19 data include the date, the state, the federal id code (fips), the number of cases recorded in the state for the given date, and the number of deaths recorded in the state for the given date. The US population data is from the [US Census Bureau website](https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html#par_textimage_1873399417). There are 151 varaibles in the US Census data -- we will use the `NAME` variable (state variable) and the estimated population in 2019 `POPESTIMATE2019`.
+
+
+
+
+- Question 1: Does the proportion of people being infected each day follow an exponential growth curve?
+
+    - I will test this by making two graphics, one of the number of cases as a function of time and the other as the logarithm of the number of cases over time. By adding a smoother to the visualization, we can detect exponential growth with a linear trend in the log-transformed data. I will also explore plotting this data with other facets and groupings (states, regions, ages, ethnicities) to see if there is evidence of exponential growth.
+    
+    
+- Question 2: Has the average rate of cases in the US grown faster/slower/the same in the last 3 weeks than the 3 weeks prior?
+
+   - To explore this, I will define a new variable as the ratio of new cases from data to day. Using this new variable, I will visualize the distributions to see if there is a difference and explore if there are difference by regions/states/other groupings. I will also calculate summary statistics like the mean/median/standard deviation of the ratio of new daily cases for the two time periods.
+   
+- Question 3: Using the the week April 10-17, has the number of new cases per 100K people (using population data available here) over the this week, is there a difference in infection rate based on spatial region in the US (northwest, south, northeast, etc.).
+
+    - This question can be answered using a visual representation of the number of cases per 100K (a mutated variable) over a spatial map. 
+    
+- Question 4: to be determined
+    -
+
+
+
+<!-- ```{r, echo = FALSE} -->
+<!-- ## convert date from a factor to a date -->
+<!-- dat_full$date <- as.Date(dat_full$date, format = "%Y-%m-%d") -->
+
+<!-- ## remove non-states, Hawaii, and Alaska -->
+<!-- dat <- dat_full %>% -->
+<!--     filter( -->
+<!--         !( -->
+<!--             state %in% c( -->
+<!--                 "Alaska", -->
+<!--                 "District of Columbia", -->
+<!--                 "Guam", -->
+<!--                 "Hawaii", -->
+<!--                 "Northern Mariana Islands",  -->
+<!--                 "Puerto Rico", -->
+<!--                 "Virgin Islands" -->
+<!--             ) -->
+<!--         ) -->
+<!--     ) -->
+<!-- dat$state <- droplevels(dat$state) -->
+
+<!-- ## state region data from https://stackoverflow.com/questions/46066974/add-column-to-label-u-s-states-by-their-u-s-census-region -->
+<!-- NE.name <- c("Connecticut","Maine","Massachusetts","New Hampshire", -->
+<!--              "Rhode Island","Vermont","New Jersey","New York", -->
+<!--              "Pennsylvania") -->
+<!-- NE.abrv <- c("CT","ME","MA","NH","RI","VT","NJ","NY","PA") -->
+<!-- NE.ref <- c(NE.name,NE.abrv) -->
+
+<!-- MW.name <- c("Indiana","Illinois","Michigan","Ohio","Wisconsin", -->
+<!--              "Iowa","Kansas","Minnesota","Missouri","Nebraska", -->
+<!--              "North Dakota","South Dakota") -->
+<!-- MW.abrv <- c("IN","IL","MI","OH","WI","IA","KS","MN","MO","NE", -->
+<!--              "ND","SD") -->
+<!-- MW.ref <- c(MW.name,MW.abrv) -->
+
+<!-- S.name <- c("Delaware","District of Columbia","Florida","Georgia", -->
+<!--             "Maryland","North Carolina","South Carolina","Virginia", -->
+<!--             "West Virginia","Alabama","Kentucky","Mississippi", -->
+<!--             "Tennessee","Arkansas","Louisiana","Oklahoma","Texas") -->
+<!-- S.abrv <- c("DE","DC","FL","GA","MD","NC","SC","VA","WV","AL", -->
+<!--             "KY","MS","TN","AR","LA","OK","TX") -->
+<!-- S.ref <- c(S.name,S.abrv) -->
+
+<!-- W.name <- c("Arizona","Colorado","Idaho","New Mexico","Montana", -->
+<!--             "Utah","Nevada","Wyoming","Alaska","California", -->
+<!--             "Hawaii","Oregon","Washington") -->
+<!-- W.abrv <- c("AZ","CO","ID","NM","MT","UT","NV","WY","AK","CA", -->
+<!--             "HI","OR","WA") -->
+<!-- W.ref <- c(W.name,W.abrv) -->
+
+<!-- region.list <- list( -->
+<!--     Northeast = NE.ref, -->
+<!--     Midwest   = MW.ref, -->
+<!--     South     = S.ref, -->
+<!--     West      = W.ref -->
+<!-- ) -->
+
+
+
+
+<!-- ## all states have records on 03-27-2020 -->
+<!-- dat %>% -->
+<!--     subset(date == "2020-03-27") %>%  -->
+<!--     nrow() -->
+
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     ggplot(aes(x = date, y= total_cases)) + -->
+<!--     geom_line() -->
+
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     ggplot(aes(x = date, y = log(total_cases))) + -->
+<!--     geom_point() -->
+
+<!-- ## fit exponential model -->
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     lm(log(total_cases) ~ date, data = .) -->
+
+
+<!-- ## fit first difference model -->
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     ungroup() %>% -->
+<!--     select(total_cases) %>% -->
+<!--     mutate(new_cases = total_cases - lag(total_cases)) -->
+
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     mutate(new_cases = total_cases - lag(total_cases)) %>% -->
+<!--     ggplot(aes(x = total_cases, y = new_cases)) + -->
+<!--     geom_point() + -->
+<!--     stat_smooth(method = "gam") -->
+
+<!-- ## log-scale lagged differences vs. total cases -->
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     mutate(new_cases = total_cases - lag(total_cases)) %>% -->
+<!--     ggplot(aes(x = log(total_cases), y = log(new_cases))) + -->
+<!--     geom_line() + -->
+<!--     stat_smooth(method = "gam") -->
+
+
+
+<!-- ## same plot but grouped by state -->
+<!-- dat %>% -->
+<!--     group_by(date, state) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     mutate(new_cases = total_cases - lag(total_cases)) %>% -->
+<!--     mutate(isArkansas = state == "Arkansas") %>% -->
+<!--     ggplot(aes(x = log(total_cases), y = log(new_cases), group = state, color = isArkansas)) + -->
+<!--     geom_line()  -->
+
+
+
+<!-- ## -->
+<!-- ## Goodness of fit for model -->
+<!-- ## fit exponential model on total cases -->
+<!-- ## -->
+<!-- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     lm(log(total_cases) ~ date, data = .) -->
+
+<!-- ## subset the data from March 1st forward -->
+<!-- ## fit exponential model for number of cases -->
+<!-- mod <- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     subset(date >= "2020-03-01") %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     lm(log(total_cases) ~ date, data = .) -->
+
+<!-- ## Observed counts  -->
+<!-- dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+
+<!-- O <- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     subset(date %in% dates) %>% -->
+<!--     summarise(total_cases = sum(cases)) %>% -->
+<!--     pull() -->
+<!-- E <- exp( -->
+<!--     mod$coefficients[1] + as.numeric(dates) * mod$coefficients[2] -->
+<!-- )  -->
+
+<!-- plot(O ~ E, main = "Observed vs. Expected total cases") -->
+<!-- abline(0, 1, col = "red") -->
+<!-- points(sum(dat$cases), 100) -->
+
+<!-- test_statistic <- sum((O - E)^2 / E) -->
+<!-- 1 - pchisq(test_statistic, df = length(dates) - 1) -->
+
+
+<!-- ## -->
+<!-- ## Goodness of fit for model -->
+<!-- ## fit exponential model on total deaths -->
+<!-- ## -->
+
+<!-- ## subset the data from March 1st forward -->
+<!-- ## fit exponential model for number of deaths -->
+<!-- mod <- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     subset(date >= "2020-03-01") %>% -->
+<!--     summarise(total_deaths = sum(deaths)) %>% -->
+<!--     lm(log(total_deaths) ~ date, data = .) -->
+
+<!-- ## Observed deaths  -->
+<!-- dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- O <- dat %>% -->
+<!--     group_by(date) %>% -->
+<!--     subset(date %in% dates) %>% -->
+<!--     summarise(total_deaths = sum(deaths)) %>% -->
+<!--     pull() -->
+<!-- E <- exp( -->
+<!--     mod$coefficients[1] + as.numeric(dates) * mod$coefficients[2] -->
+<!-- )  -->
+
+<!-- plot(O ~ E, main = "Observed vs. Expected total deaths") -->
+<!-- abline(0, 1, col = "red") -->
+
+<!-- test_statistic <- sum((O - E)^2 / E) -->
+<!-- 1 - pchisq(test_statistic, df = length(dates) - 1) -->
+
+<!-- ## strong evidence this is not following a simple exponential curve model -->
+
+
+<!-- ## make some animations -->
+
+<!-- ## complete the data.frame -->
+<!-- dat_completed <- dat %>%  -->
+<!--     complete(state, nesting(date), fill = list(cases = NA, deaths = NA)) -->
+
+
+
+<!-- ##  -->
+<!-- ## Load populatoin data -->
+<!-- ##  -->
+
+<!-- ## filter out lower 48 states and keep most recent population estimate -->
+<!-- dat_pop <- dat_pop %>% -->
+<!--     subset(!(NAME %in% c( -->
+<!--         "United States", -->
+<!--         "Northeast Region",  -->
+<!--         "Midwest Region",  -->
+<!--         "South Region",  -->
+<!--         "West Region", -->
+<!--         "Alaska", -->
+<!--         "District of Columbia",  -->
+<!--         "Hawaii", -->
+<!--         "Puerto Rico" -->
+<!--     ))) %>% -->
+<!--     select(NAME, POPESTIMATE2019) -->
+<!-- ## need to merge the data by name -->
+<!-- dat_merged <- merge(dat_completed, dat_pop, by.x = "state", by.y = "NAME") -->
+<!-- dat_merged <- dat_merged %>% -->
+<!--     mutate(cases_per_100K = cases / (POPESTIMATE2019 / 1e6)) -->
+
+<!-- ## plot of number cases per 100K  grouped by state -->
+<!-- dat_merged %>% -->
+<!--     subset(date >= "2020-03-01") %>% -->
+<!--     group_by(state, date) %>% -->
+<!--     summarise(total_cases_per_100K = sum(cases_per_100K)) %>% -->
+<!--     mutate(new_cases_per_100K = total_cases_per_100K - lag(total_cases_per_100K)) %>% -->
+<!--     mutate(region = names(region.list)[grep(state, region.list)]) %>% -->
+<!--     ggplot(aes(x = log(total_cases_per_100K), y = log(new_cases_per_100K), group = state, color = state)) + -->
+<!--     geom_line() + -->
+<!--     scale_color_viridis_d() + -->
+<!--     facet_wrap(~ region) + -->
+<!--     geom_smooth() -->
+
+<!-- ``` -->
+
+<!-- ```{r, eval = FALSE, echo = FALSE} -->
+<!-- # ##  -->
+<!-- # ## Generate plots -->
+<!-- # ## -->
+<!-- # library(maps) -->
+<!-- # states <- map_data("state") -->
+<!-- #  -->
+<!-- # ## Plot overall cases -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- range(pmax(log(dat$cases), 1), na.rm = TRUE) -->
+<!-- #     for (i in dates) { -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = subset(dat_completed, date == as.Date(i, origin = "1970-01-01")),  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = log(cases), map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "Log-number of cases on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                         # lubridate::month(i, label = TRUE),  -->
+<!-- #                         # lubridate::day(i) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-log-scale-animation.gif"))) { -->
+<!-- #      -->
+<!-- #     gifski::save_gif( -->
+<!-- #         make_plot(), -->
+<!-- #         gif_file = here::here("images", "COVID-19-log-scale-animation.gif"),  -->
+<!-- #         progress = FALSE, -->
+<!-- #         delay = 0.5,  -->
+<!-- #         height = 360, width = 640, units = "px" -->
+<!-- #     ) -->
+<!-- # # } -->
+<!-- #  -->
+<!-- # ## plot on the data scale -->
+<!-- #  -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- range(dat$cases, na.rm = TRUE) -->
+<!-- #     for (i in dates) { -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = subset(dat_completed, date == as.Date(i, origin = "1970-01-01")),  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = cases, map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "Log-number of cases on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                         # lubridate::month(i, label = TRUE),  -->
+<!-- #                         # lubridate::day(i) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-animation.gif"))) { -->
+<!-- #  -->
+<!-- # gifski::save_gif( -->
+<!-- #     make_plot(), -->
+<!-- #     gif_file = here::here("images", "COVID-19-animation.gif"),  -->
+<!-- #     progress = FALSE, -->
+<!-- #     delay = 0.5,  -->
+<!-- #     height = 360, width = 640, units = "px" -->
+<!-- # ) -->
+<!-- # # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ## -->
+<!-- # ## plot new cases per day -->
+<!-- # ## -->
+<!-- #  -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- dat %>% -->
+<!-- #         group_by(state) %>% -->
+<!-- #         mutate(new_cases = cases - lag(cases)) %>% -->
+<!-- #         ungroup() %>% -->
+<!-- #         summarize( -->
+<!-- #             min = min(new_cases, na.rm = TRUE), -->
+<!-- #             max = max(new_cases, na.rm = TRUE) -->
+<!-- #         ) %>% -->
+<!-- #         unlist() -->
+<!-- #     for (i in dates) { -->
+<!-- #         dat_plot <- dat_completed %>% -->
+<!-- #             group_by(state) %>% -->
+<!-- #             mutate(new_cases = cases - lag(cases)) %>% -->
+<!-- #             subset(date == as.Date(i, origin = "1970-01-01")) -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = dat_plot,  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = new_cases, map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "New cases on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-log-scale-animation.gif"))) { -->
+<!-- #  -->
+<!-- # gifski::save_gif( -->
+<!-- #     make_plot(), -->
+<!-- #     gif_file = here::here("images", "COVID-19-new-cases-animation.gif"),  -->
+<!-- #     progress = FALSE, -->
+<!-- #     delay = 0.5,  -->
+<!-- #     height = 360, width = 640, units = "px" -->
+<!-- # ) -->
+<!-- #     # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ## -->
+<!-- # ## plot on per 100K persons scale -->
+<!-- # ## -->
+<!-- #  -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- range(dat_merged$cases_per_100K, na.rm = TRUE) -->
+<!-- #     for (i in dates) { -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = subset(dat_merged, date == as.Date(i, origin = "1970-01-01")),  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = cases_per_100K, map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "Cases per 100K people on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                         # lubridate::month(i, label = TRUE),  -->
+<!-- #                         # lubridate::day(i) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-per-100K-animation.gif"))) { -->
+<!-- #  -->
+<!-- # gifski::save_gif( -->
+<!-- #     make_plot(), -->
+<!-- #     gif_file = here::here("images", "COVID-19-per-100K-animation.gif"),  -->
+<!-- #     progress = FALSE, -->
+<!-- #     delay = 0.5,  -->
+<!-- #     height = 360, width = 640, units = "px" -->
+<!-- # ) -->
+<!-- # # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ## -->
+<!-- # ## plot on per 100K persons log-scale -->
+<!-- # ## -->
+<!-- #  -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- range(log(dat_merged$cases_per_100K), na.rm = TRUE) -->
+<!-- #     for (i in dates) { -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = subset(dat_merged, date == as.Date(i, origin = "1970-01-01")),  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = log(cases_per_100K), map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "Cases per 100K people on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                         # lubridate::month(i, label = TRUE),  -->
+<!-- #                         # lubridate::day(i) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-per-100K-log-scale-animation.gif"))) { -->
+<!-- #  -->
+<!-- # gifski::save_gif( -->
+<!-- #     make_plot(), -->
+<!-- #     gif_file = here::here("images", "COVID-19-per-100K-log-scale-animation.gif"),  -->
+<!-- #     progress = FALSE, -->
+<!-- #     delay = 0.5,  -->
+<!-- #     height = 360, width = 640, units = "px" -->
+<!-- # ) -->
+<!-- # # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ## -->
+<!-- # ## plot new cases per day per 100K -->
+<!-- # ## -->
+<!-- #  -->
+<!-- # make_plot <- function() { -->
+<!-- #     dates <- seq.Date(from = as.Date("2020-03-01"), to = max(dat$date), by = 1) -->
+<!-- #     zlims <- dat_merged %>% -->
+<!-- #         group_by(state) %>% -->
+<!-- #         mutate(new_cases_per_100K = pmax(cases_per_100K - lag(cases_per_100K), 0)) %>% -->
+<!-- #         ungroup() %>% -->
+<!-- #         summarize( -->
+<!-- #             min = min(new_cases_per_100K, na.rm = TRUE), -->
+<!-- #             max = max(new_cases_per_100K, na.rm = TRUE) -->
+<!-- #         ) %>% -->
+<!-- #         unlist() -->
+<!-- #     for (i in dates) { -->
+<!-- #         dat_plot <- dat_merged %>% -->
+<!-- #             group_by(state) %>% -->
+<!-- #             mutate(new_cases_per_100K = pmax(cases_per_100K - lag(cases_per_100K), 0)) %>% -->
+<!-- #             subset(date == as.Date(i, origin = "1970-01-01")) -->
+<!-- #         print( -->
+<!-- #             ggplot() + -->
+<!-- #                 geom_map(data = states, map = states, -->
+<!-- #                          aes(x = long, y = lat, map_id = region), -->
+<!-- #                          fill = "#ffffff", color = "#ffffff", size = 0.15) + -->
+<!-- #                 geom_map( -->
+<!-- #                     data = dat_plot,  -->
+<!-- #                     map = states, -->
+<!-- #                     aes(fill = new_cases_per_100K, map_id = tolower(state)), -->
+<!-- #                     color = "#ffffff", size = 0.15 -->
+<!-- #                 ) + -->
+<!-- #                 ggtitle( -->
+<!-- #                     paste( -->
+<!-- #                         "New cases on",  -->
+<!-- #                         lubridate::month(as.Date(i, origin = "1970-01-01"), label = TRUE), -->
+<!-- #                         lubridate::day(as.Date(i, origin = "1970-01-01")) -->
+<!-- #                     ) -->
+<!-- #                 ) + -->
+<!-- #                 lims(fill = zlims) -->
+<!-- #         ) -->
+<!-- #     } -->
+<!-- # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # if (!file.exists(here::here("images", "COVID-19-log-scale-animation.gif"))) { -->
+<!-- #  -->
+<!-- # gifski::save_gif( -->
+<!-- #     make_plot(), -->
+<!-- #     gif_file = here::here("images", "COVID-19-new-cases-per-100K-animation.gif"),  -->
+<!-- #     progress = FALSE, -->
+<!-- #     delay = 0.5,  -->
+<!-- #     height = 360, width = 640, units = "px" -->
+<!-- # ) -->
+<!-- # # } -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+
+<!-- ``` -->

@@ -1,0 +1,52 @@
+---
+title: "End of File VS Code Windows"
+author: "Andrew Alverson and John Tipton"
+date: |
+    | Created: 9/18/2020
+    | Last modified: 9/18/2020
+output:
+  html_document:
+    number_sections: yes
+  pdf_document: default
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+## default options for compiling the Rmarkdown document
+knitr::opts_chunk$set(
+  echo      = FALSE, 
+  tidy      = TRUE, 
+  fig.align = "center",
+  out.width = "100%"
+)
+knitr::opts_chunk$set(package.startup.message = FALSE)
+```
+
+
+There are issues when sharing files that are created on Windows machines when using the file on a linux-based machine (including MacOS). This is related to the way a computer defines a new line (`\n` in linux and `\r\n` on Windows).
+
+To get to the options to change the line files, open the settings by clicking the gear icon in the lower left and then choose settings.
+
+```{r}
+knitr::include_graphics(here::here("images", "VS-settings.png"))
+```
+
+Once the settings window opens, in the search bar at the top of the window, search for `end of line` and hit return. This will open a bunch of options. In the option `Files: Eol` there will be a drop-down menu. Choose the drop down menu and select the `\n` option. At the bottom of the drop-down menu, this will then show `LF`. 
+
+```{r}
+knitr::include_graphics(here::here("images", "VS-settings-end-of-line.png"))
+```
+
+
+Open up a new python script and verify that the end of line file type is `LF` in the lower menu bar. If the end of line file type shows `CRLF`, quit and restart VS code. If the end of line file is still `CRLF` repeat the process listed above.
+
+```{r}
+knitr::include_graphics(here::here("images", "VS-settings-LF.png"))
+```
+
+
+
+# References
+
+This tutorial was based on [https://qvault.io/2020/06/18/how-to-get-consistent-line-breaks-in-vs-code-lf-vs-crlf/](https://qvault.io/2020/06/18/how-to-get-consistent-line-breaks-in-vs-code-lf-vs-crlf/)
+
