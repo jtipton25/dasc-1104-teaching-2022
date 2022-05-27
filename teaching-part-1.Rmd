@@ -3,7 +3,7 @@ title: "Teaching R in DASC 1104"
 subtitle: "R Part I"
 author: "John Tipton"
 institute: "The University of Arkansas"
-date: "2021/06/07 (updated: `r Sys.Date()`)"
+date: "2022/06/01 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     self_contained: true
@@ -56,7 +56,7 @@ options(htmltools.dir.version = FALSE)
 
 # Materials
 
-- Available on gitHub at [https://github.com/jtipton25/dasc-1104-teaching](https://github.com/jtipton25/dasc-1104-teaching) 
+- Available on gitHub at [https://github.com/jtipton25/dasc-1104-teaching-2022](https://github.com/jtipton25/dasc-1104-teaching-2022) 
 
 ---
 
@@ -122,7 +122,9 @@ options(htmltools.dir.version = FALSE)
     
 * Can be installed [locally](https://www.rstudio.com/products/rstudio/) or on a [server](https://www.rstudio.com/products/workbench/) (I use a SSO server option)
 
-* [RStudio Cloud](https://rstudio.cloud/) provides a remote-hosting option for teaching
+* [RStudio Cloud](https://rstudio.cloud/) provides a remote-hosting option for teaching 
+
+    * Plan to use this resource going forward
 
 ---
 
@@ -379,7 +381,7 @@ airquality %>%
     
 - Lead with data visualization, follow up with data manipulation
 
---- 
+---
 
 # Explore for meaningful datasets to use
 

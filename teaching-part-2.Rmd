@@ -3,7 +3,7 @@ title: "Teaching R in DASC 1104"
 subtitle: "R Part II"
 author: "John Tipton"
 institute: "The University of Arkansas"
-date: "2021/06/07 (updated: `r Sys.Date()`)"
+date: "2022/06/01 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     self_contained: true
@@ -77,6 +77,8 @@ options(htmltools.dir.version = FALSE)
 
 - Available on gitHub at [https://github.com/jtipton25/dasc-1104-teaching](https://github.com/jtipton25/dasc-1104-teaching)
 
+- Labs and HWs available by request: email: [jrtipton@uark.edu](jrtipton@uark.edu)
+
 ---
 
 # Course make file
@@ -88,6 +90,8 @@ options(htmltools.dir.version = FALSE)
 # note: this will take a while, maybe 15-20 minutes
 source(here::here("make.R"))
 ```
+
+---
 
 # Lectures
 
@@ -157,23 +161,24 @@ source(here::here("make.R"))
 
 # Data manipulation
 
-## Most important `dplyr` (a part of the `tidyverse`) commands
+* Most important `dplyr` (a part of the `tidyverse`) commands
 
-* Using pipes `%>%`
+    * Using pipes `%>%` (or `|>`)
 
-* Choose observations (rows) based on conditional values with `filter()`
+    * Choose observations (rows) based on conditional values with `filter()`
 
-* Reorder the variables with `arrange()`
+    * Reorder the variables with `arrange()`
 
-* Select variables by name with `select()`
+    * Select variables by name with `select()`
 
-* Create new variables with `mutate()`
+    * Create new variables with `mutate()`
 
-* Create summary variables with `summarize()` 
-    * `summarise()` if you are British 
+    * Create summary variables with `summarize()` 
+        * `summarise()` if you are British 
     
-* Group variables with `group_by()`    
+    * Group variables with `group_by()`    
     
+---
 
 # Pipes
 
@@ -245,7 +250,8 @@ itsy_bitsy_spider %>%
 
 * How does the pipe work?
 
-```{r}
+```{r, message = FALSE}
+library(tidyverse)
 x <- 1:10
 x %>%
   mean()
@@ -495,7 +501,7 @@ parameters_check()
 inits_check()
 ```
 
----    
+---
 
 # For loops
 
@@ -518,34 +524,34 @@ value
 - write a function that returns the mean of each column
 
 
----
+<!-- --- -->
 
-# The project
+<!-- # The project -->
 
-- Idea: have each student construct a blog and perform a basic analysis using the skills learned in the class
+<!-- - Idea: have each student construct a blog and perform a basic analysis using the skills learned in the class -->
 
-- Maybe next semester the project will be smaller in scope to cover more material
+<!-- - Maybe next semester the project will be smaller in scope to cover more material -->
 
-- Have students use data to tell a story using summary statistics and data visualization
+<!-- - Have students use data to tell a story using summary statistics and data visualization -->
 
----
+<!-- --- -->
 
-# Example projects
+<!-- # Example projects -->
 
 
-- https://jdkincan.netlify.app/about/
-- https://arbeger-blog.netlify.app/
-- https://dasc-1104-alc.netlify.app/
-- https://dasc1104-blog-project.netlify.app/
-- https://tracef.netlify.app/
-- https://abbyharris.netlify.app/
-- https://akoster-dasc-1104-blog.netlify.app/
-- https://dasc-1104-bmarlow.netlify.app/
-- https://hpmcdona.netlify.app/
-- https://mrrice-dasc-1104-blog.netlify.app/
-- https://ntrogers.netlify.app/about/
-- https://nifty-wozniak-e3e1d9.netlify.app/about/
-- https://dasc-1104-calebwilliamsblog.netlify.app/about/
-- https://rjyates-dasc-blog.netlify.app/
+<!-- - https://jdkincan.netlify.app/about/ -->
+<!-- - https://arbeger-blog.netlify.app/ -->
+<!-- - https://dasc-1104-alc.netlify.app/ -->
+<!-- - https://dasc1104-blog-project.netlify.app/ -->
+<!-- - https://tracef.netlify.app/ -->
+<!-- - https://abbyharris.netlify.app/ -->
+<!-- - https://akoster-dasc-1104-blog.netlify.app/ -->
+<!-- - https://dasc-1104-bmarlow.netlify.app/ -->
+<!-- - https://hpmcdona.netlify.app/ -->
+<!-- - https://mrrice-dasc-1104-blog.netlify.app/ -->
+<!-- - https://ntrogers.netlify.app/about/ -->
+<!-- - https://nifty-wozniak-e3e1d9.netlify.app/about/ -->
+<!-- - https://dasc-1104-calebwilliamsblog.netlify.app/about/ -->
+<!-- - https://rjyates-dasc-blog.netlify.app/ -->
 
 
