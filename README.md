@@ -1,4 +1,4 @@
-# dasc-1104-teaching
+# Teaching DASC 1104
 
 Materials for the NSF EPSCoR DART Ed-Theme Summer Pedagogical Workshop #2
 Wednesday June 1st--Friday June 3rd
