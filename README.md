@@ -5,3 +5,5 @@ Wednesday June 1st--Friday June 3rd
 Fayetteville Arkansas
 
 R code and materials for DASC 1104 Programming Languages for Data Science
+
+For example HW and Labs, feel free to email me at jrtipton{at}uark.edu
