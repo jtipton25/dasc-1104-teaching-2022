@@ -1209,7 +1209,7 @@ df %>% complete(group, nesting(item_id, item_name))
 ```{r}
 df %>%
   complete(group, nesting(item_id, item_name), 
-           fill = list(value1 = "foo", value2 = "bar"))
+           fill = list(value1 = 9999, value2 = -9999))
 ```
 
 
